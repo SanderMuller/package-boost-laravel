@@ -22,7 +22,7 @@
         }
     ],
     "require": {
-        "php": "^8.2",
+        "php": "^8.3",
         "orchestra/testbench": "^9.0||^10.0||^11.0",
         "sandermuller/boost-core": "^1.0@dev",
         "sandermuller/package-boost-php": "^1.0@dev"
@@ -76,18 +76,12 @@
             "sandermuller/package-boost-php": true
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true,
     "repositories": [
         {
-            "type": "path",
-            "url": "../boost-core",
-            "options": { "symlink": true }
-        },
-        {
-            "type": "path",
-            "url": "../package-boost-php",
-            "options": { "symlink": true }
+            "type": "vcs",
+            "url": "https://github.com/sandermuller/package-boost-php"
         }
     ]
 }

@@ -1,0 +1,32 @@
+includes:
+    - phar://phpstan.phar/conf/bleedingEdge.neon
+
+parameters:
+    tmpDir: .cache/phpstan
+    paths:
+        - src
+        - tests
+    level: max
+    strictRules:
+        allRules: true
+    treatPhpDocTypesAsCertain: false
+    ignoreErrors:
+        -
+            identifier: trait.unused
+            reportUnmatched: false
+        -
+            identifier: method.internalClass
+            path: tests/*
+            reportUnmatched: false
+        -
+            identifier: property.notFound
+            path: tests/*
+            reportUnmatched: false
+        -
+            identifier: method.nonObject
+            path: tests/*
+            reportUnmatched: false
+        -
+            identifier: property.nonObject
+            path: tests/*
+            reportUnmatched: false

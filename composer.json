@@ -1,0 +1,90 @@
+{
+    "name": "sandermuller/package-boost-laravel",
+    "description": "AI agent skills for Laravel package authors. Adds Laravel-flavored skills + .mcp.json emission on top of package-boost-php.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "sandermuller",
+        "package-boost",
+        "ai",
+        "claude",
+        "laravel",
+        "testbench",
+        "package-development",
+        "developer-tools"
+    ],
+    "homepage": "https://github.com/sandermuller/package-boost-laravel",
+    "authors": [
+        {
+            "name": "Sander Muller",
+            "email": "github@scode.nl",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "orchestra/testbench": "^9.0||^10.0||^11.0",
+        "sandermuller/boost-core": "^1.0@dev",
+        "sandermuller/package-boost-php": "^1.0@dev"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.29",
+        "pestphp/pest": "^4.0",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "^2.0",
+        "phpstan/phpstan-strict-rules": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "SanderMuller\\PackageBoostLaravel\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SanderMuller\\PackageBoostLaravel\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "boost": {
+            "skills": "resources/boost/skills",
+            "guidelines": "resources/boost/guidelines",
+            "emitters": [
+                "SanderMuller\\PackageBoostLaravel\\Emitters\\McpJsonEmitter"
+            ]
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/pest",
+        "stan": "vendor/bin/phpstan analyse --memory-limit=2G",
+        "fmt": "vendor/bin/pint",
+        "fmt:check": "vendor/bin/pint --test",
+        "ci": [
+            "@fmt:check",
+            "@stan",
+            "@test"
+        ]
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true,
+            "sandermuller/boost-core": true,
+            "sandermuller/package-boost-php": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../boost-core",
+            "options": { "symlink": true }
+        },
+        {
+            "type": "path",
+            "url": "../package-boost-php",
+            "options": { "symlink": true }
+        }
+    ]
+}

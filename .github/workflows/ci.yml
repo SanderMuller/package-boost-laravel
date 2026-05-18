@@ -41,8 +41,8 @@ jobs:
       - name: Wire sibling checkouts as path repositories
         working-directory: package-boost-laravel
         run: |
-          composer config repositories.boost-core path ../boost-core
-          composer config repositories.package-boost-php path ../package-boost-php
+          composer config repositories.boost-core '{"type":"path","url":"../boost-core","options":{"versions":{"sandermuller/boost-core":"1.0.x-dev"}}}'
+          composer config repositories.package-boost-php '{"type":"path","url":"../package-boost-php","options":{"versions":{"sandermuller/package-boost-php":"1.0.x-dev"}}}'
           composer config minimum-stability dev
           composer config prefer-stable true
 

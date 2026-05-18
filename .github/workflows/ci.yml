@@ -15,6 +15,22 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          path: package-boost-laravel
+
+      - name: Checkout boost-core sibling
+        uses: actions/checkout@v4
+        with:
+          repository: SanderMuller/boost-core
+          path: boost-core
+          ref: main
+
+      - name: Checkout package-boost-php sibling
+        uses: actions/checkout@v4
+        with:
+          repository: SanderMuller/package-boost-php
+          path: package-boost-php
+          ref: main
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -23,7 +39,9 @@ jobs:
           coverage: none
 
       - name: Install dependencies
+        working-directory: package-boost-laravel
         run: composer install --prefer-dist --no-progress
 
       - name: Run CI
+        working-directory: package-boost-laravel
         run: composer ci

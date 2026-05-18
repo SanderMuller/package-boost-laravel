@@ -12,9 +12,11 @@ use SanderMuller\BoostCore\Sync\SyncContext;
 /**
  * Emits `.mcp.json` for Laravel Boost integration with Claude Code.
  *
- * Conditional: only emits when both `laravel/boost` is installed AND
- * `Agent::CLAUDE_CODE` is in the active agents list. Returning null
- * skips the emission silently.
+ * Conditional: only emits when `laravel/boost` + `orchestra/testbench` are
+ * both installed AND `Agent::CLAUDE_CODE` is in the active agents list.
+ * Testbench is required because the emitted command is
+ * `vendor/bin/testbench boost:mcp` — without it the MCP server can't boot.
+ * Returning null skips the emission silently.
  */
 final class McpJsonEmitter implements FileEmitter
 {
@@ -24,24 +26,26 @@ final class McpJsonEmitter implements FileEmitter
             return null;
         }
 
+        if (! $ctx->packages->has('orchestra/testbench')) {
+            return null;
+        }
+
         if (! in_array(Agent::CLAUDE_CODE, $ctx->config->agents, true)) {
             return null;
         }
 
-        $boostBin = $ctx->packages->path('laravel/boost').'/bin/boost';
-
         $config = [
             'mcpServers' => [
                 'laravel-boost' => [
-                    'command' => 'php',
-                    'args' => [$boostBin, 'mcp:start'],
+                    'command' => 'vendor/bin/testbench',
+                    'args' => ['boost:mcp'],
                 ],
             ],
         ];
 
         return new EmittedFile(
             relativePath: '.mcp.json',
-            content: json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)."\n",
+            content: json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR) . "\n",
         );
     }
 }

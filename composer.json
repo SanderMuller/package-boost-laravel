@@ -23,16 +23,33 @@
     ],
     "require": {
         "php": "^8.3",
-        "orchestra/testbench": "^9.0||^10.0||^11.0",
-        "sandermuller/boost-core": "^1.0@dev",
-        "sandermuller/package-boost-php": "^1.0@dev"
+        "illuminate/contracts": "^11.0||^12.0||^13.0",
+        "illuminate/support": "^11.0||^12.0||^13.0",
+        "sandermuller/boost-core": "^0.3.1",
+        "sandermuller/package-boost-php": "dev-main"
     },
     "require-dev": {
+        "driftingly/rector-laravel": "^2.3",
+        "larastan/larastan": "^3.9",
+        "laravel/boost": "^2.0||^3.0",
+        "laravel/pao": "^1.0",
         "laravel/pint": "^1.29",
+        "mrpunyapal/rector-pest": "^0.2",
+        "nunomaduro/collision": "^8.0",
+        "orchestra/testbench": "^9.0||^10.0||^11.0",
         "pestphp/pest": "^4.0",
+        "pestphp/pest-plugin-arch": "^4.0",
+        "pestphp/pest-plugin-laravel": "^4.0",
         "phpstan/extension-installer": "^1.4",
-        "phpstan/phpstan": "^2.0",
-        "phpstan/phpstan-strict-rules": "^2.0"
+        "phpstan/phpstan-deprecation-rules": "^2.0",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "phpstan/phpstan-strict-rules": "^2.0",
+        "rector/rector": "^2.4",
+        "rector/type-perfect": "^2.1",
+        "spaze/phpstan-disallowed-calls": "^4.10",
+        "symplify/phpstan-extensions": "^12.0",
+        "tomasvotruba/cognitive-complexity": "^1.1",
+        "tomasvotruba/type-coverage": "^2.1"
     },
     "autoload": {
         "psr-4": {
@@ -41,29 +58,61 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "SanderMuller\\PackageBoostLaravel\\Tests\\": "tests/"
+            "SanderMuller\\PackageBoostLaravel\\Tests\\": "tests/",
+            "Workbench\\App\\": "workbench/app/"
         }
     },
     "extra": {
         "branch-alias": {
-            "dev-main": "1.x-dev"
+            "dev-main": "0.3.x-dev"
         },
         "boost": {
-            "skills": "resources/boost/skills",
-            "guidelines": "resources/boost/guidelines",
             "emitters": [
                 "SanderMuller\\PackageBoostLaravel\\Emitters\\McpJsonEmitter"
+            ]
+        },
+        "laravel": {
+            "providers": [
+                "SanderMuller\\PackageBoostLaravel\\PackageBoostLaravelServiceProvider"
             ]
         }
     },
     "scripts": {
+        "post-autoload-dump": [
+            "@clear",
+            "@prepare"
+        ],
+        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+        "prepare": "@php vendor/bin/testbench package:discover --ansi",
+        "build": "@php vendor/bin/testbench workbench:build --ansi",
+        "serve": [
+            "Composer\\Config::disableProcessTimeout",
+            "@build",
+            "@php vendor/bin/testbench serve --ansi"
+        ],
+        "post-install-cmd": [
+            "SanderMuller\\BoostCore\\Scripts\\BoostAutoSync::run"
+        ],
+        "post-update-cmd": [
+            "SanderMuller\\BoostCore\\Scripts\\BoostAutoSync::run"
+        ],
         "test": "vendor/bin/pest",
-        "stan": "vendor/bin/phpstan analyse --memory-limit=2G",
-        "fmt": "vendor/bin/pint",
-        "fmt:check": "vendor/bin/pint --test",
-        "ci": [
-            "@fmt:check",
-            "@stan",
+        "test-coverage": "vendor/bin/pest --coverage",
+        "phpstan": "vendor/bin/phpstan analyse --memory-limit=2G",
+        "phpstan-simplified": "vendor/bin/phpstan analyse --memory-limit=2G --error-format symplify",
+        "phpstan-clear-cache": "vendor/bin/phpstan clear-result-cache",
+        "format": "vendor/bin/pint",
+        "rector": "vendor/bin/rector process",
+        "sync-ai": "vendor/bin/boost sync",
+        "qa": [
+            "@rector",
+            "@format",
+            "@phpstan-simplified"
+        ],
+        "qa-check": [
+            "vendor/bin/rector process --dry-run",
+            "vendor/bin/pint --test",
+            "@phpstan-simplified",
             "@test"
         ]
     },

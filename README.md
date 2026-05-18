@@ -9,19 +9,6 @@
 
 ## Install
 
-Not yet on Packagist. While you wait, install via vcs repositories:
-
-```json
-{
-    "repositories": [
-        { "type": "vcs", "url": "https://github.com/sandermuller/package-boost-laravel" },
-        { "type": "vcs", "url": "https://github.com/sandermuller/package-boost-php" }
-    ],
-    "minimum-stability": "dev",
-    "prefer-stable": true
-}
-```
-
 ```bash
 composer require --dev sandermuller/package-boost-laravel
 ```

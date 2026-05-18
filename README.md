@@ -36,6 +36,8 @@ composer boost:sync      # fan out skills + guidelines to selected agents
 
 `McpJsonEmitter` runs automatically during `boost:sync` when both `laravel/boost` is in your dep tree and `Agent::CLAUDE_CODE` is in your active agents.
 
+Generated agent dirs are added to `.gitignore` automatically and regenerated on every `composer install` — edit `.ai/` only. Set `BOOST_SKIP_AUTOSYNC=1` to disable.
+
 ## License
 
 MIT. See [LICENSE](LICENSE).

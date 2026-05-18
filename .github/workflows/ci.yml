@@ -22,13 +22,6 @@ jobs:
           php-version: ${{ matrix.php }}
           coverage: none
 
-      - name: Wire sibling checkouts as path repositories
-        run: |
-          composer config repositories.boost-core '{"type":"path","url":"../boost-core","options":{"versions":{"sandermuller/boost-core":"1.0.x-dev"}}}'
-          composer config repositories.package-boost-php '{"type":"path","url":"../package-boost-php","options":{"versions":{"sandermuller/package-boost-php":"1.0.x-dev"}}}'
-          composer config minimum-stability dev
-          composer config prefer-stable true
-
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
 

@@ -31,7 +31,7 @@ composer require --dev sandermuller/package-boost-laravel
 ```bash
 composer boost:init      # generate boost.php starter (from boost-core)
 composer boost:install   # interactive picker: agents + vendor allowlist
-composer boost:sync      # fan out skills + guidelines to selected agents
+vendor/bin/boost sync      # fan out skills + guidelines to selected agents
 ```
 
 `McpJsonEmitter` runs automatically during `boost:sync` when both `laravel/boost` is in your dep tree and `Agent::CLAUDE_CODE` is in your active agents.

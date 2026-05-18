@@ -15,22 +15,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          path: package-boost-laravel
-
-      - name: Checkout boost-core sibling
-        uses: actions/checkout@v4
-        with:
-          repository: SanderMuller/boost-core
-          path: boost-core
-          ref: main
-
-      - name: Checkout package-boost-php sibling
-        uses: actions/checkout@v4
-        with:
-          repository: SanderMuller/package-boost-php
-          path: package-boost-php
-          ref: main
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -39,7 +23,6 @@ jobs:
           coverage: none
 
       - name: Wire sibling checkouts as path repositories
-        working-directory: package-boost-laravel
         run: |
           composer config repositories.boost-core '{"type":"path","url":"../boost-core","options":{"versions":{"sandermuller/boost-core":"1.0.x-dev"}}}'
           composer config repositories.package-boost-php '{"type":"path","url":"../package-boost-php","options":{"versions":{"sandermuller/package-boost-php":"1.0.x-dev"}}}'
@@ -47,9 +30,7 @@ jobs:
           composer config prefer-stable true
 
       - name: Install dependencies
-        working-directory: package-boost-laravel
         run: composer install --prefer-dist --no-progress
 
       - name: Run CI
-        working-directory: package-boost-laravel
         run: composer ci

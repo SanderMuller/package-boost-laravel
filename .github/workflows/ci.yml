@@ -38,6 +38,14 @@ jobs:
           php-version: ${{ matrix.php }}
           coverage: none
 
+      - name: Wire sibling checkouts as path repositories
+        working-directory: package-boost-laravel
+        run: |
+          composer config repositories.boost-core path ../boost-core
+          composer config repositories.package-boost-php path ../package-boost-php
+          composer config minimum-stability dev
+          composer config prefer-stable true
+
       - name: Install dependencies
         working-directory: package-boost-laravel
         run: composer install --prefer-dist --no-progress

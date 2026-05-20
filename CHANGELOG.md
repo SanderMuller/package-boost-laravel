@@ -5,7 +5,7 @@ All notable changes to `sandermuller/package-boost-laravel` will be documented h
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.3.0...HEAD)
+## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.4.0...HEAD)
 
 ### Added
 
@@ -14,6 +14,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `McpJsonEmitter` (FileEmitter implementation) — emits `.mcp.json` when `laravel/boost` is detected and Claude Code is active.
 - Inherits 5 framework-agnostic skills from `package-boost-php` via Composer dep resolution.
 
+## [0.4.0](https://github.com/sandermuller/package-boost-laravel/compare/0.3.0...0.4.0) - 2026-05-20
+
+Tracks the `boost-core` 0.4.0 family release. `package-boost-laravel`'s own surface — `McpJsonEmitter`, the service provider, the three shipped skills — is unchanged. This release bumps the two `sandermuller/*` dependency constraints so downstream installs pick up the new `boost-core` skill-path layout.
+
+### Breaking — user-scope skill paths relocated
+
+`boost-core` 0.4.0 changes where user-scope skills are synced:
+
+```
+~/.{agent}/skills/<basename>/  →  ~/.{agent}/skills/<vendor>__<package>/
+
+```
+The slug now carries the full Composer `vendor/package` name with the slash rewritten to `__` — a sequence the Composer name spec forbids, so the mapping is collision-free across vendors. A one-time auto-migration with an ownership check relocates existing user-scope skill directories on the next sync; no manual action required.
+
+Project-scope paths (`.claude/skills/`, `.github/skills/`) are unaffected. `package-boost-laravel`'s own `McpJsonEmitter` is a project-scope emitter and is likewise unaffected — for this package the bump is purely transitive.
+
+### Changed
+
+- `sandermuller/boost-core`: `^0.3.2` → `^0.4`
+- `sandermuller/package-boost-php`: `^0.3.0` → `^0.4`
+
+Both constraints move together — `package-boost-php` 0.4.0 is the floor and itself requires `boost-core ^0.4`. `boost-core` stays a direct `require` here because `post-install-cmd` / `post-update-cmd` reference `BoostCore\Scripts\BoostAutoSync::run` and `allow-plugins` lists it.
+
+### Upgrading
+
+```bash
+composer update sandermuller/package-boost-laravel
+
+```
+The `post-update-cmd` auto-sync hook runs the skill-path migration on the next install/update. Skip it with `BOOST_SKIP_AUTOSYNC=1` if you want to defer the move.
+
+**Full Changelog**: https://github.com/SanderMuller/package-boost-laravel/compare/0.3.0...0.4.0
+
 ## [0.3.0](https://github.com/sandermuller/package-boost-laravel/compare/...0.3.0) - 2026-05-18
 
 First tagged release of `sandermuller/package-boost-laravel` — AI agent skills for Laravel package authors, with `.mcp.json` emission on top of `package-boost-php`.
@@ -21,13 +54,17 @@ First tagged release of `sandermuller/package-boost-laravel` — AI agent skills
 ### What ships
 
 - **`McpJsonEmitter`** — generates a portable `.mcp.json` (`vendor/bin/testbench boost:mcp`) when `laravel/boost` + `orchestra/testbench` are installed and `Agent::CLAUDE_CODE` is in the active agent list. Gated on testbench presence so the emitted command always points at a binary that actually exists.
+  
 - **Three Laravel-flavored skills** in `resources/boost/skills/`:
+  
   - `package-development` — Testbench-based package authoring
   - `cross-version-laravel-support` — `^12||^13` matrix support
   - `ci-matrix-troubleshooting` — diagnosing resolve failures and floor mismatches
   
 - **Inherits five framework-agnostic skills** from `package-boost-php` (`lean-dist`, `readme`, `release-notes`, `skill-authoring`, `upgrading`).
+  
 - **Repo-init `laravel-package` baseline** — canonical CI matrix split (phpstan / pint-check / rector-check / run-tests / update-changelog), testbench + workbench bootstrap, ServiceProvider + publishable config, larastan-aware static analysis, type-perfect / cognitive-complexity / type-coverage rules, rector with Laravel + Pest sets.
+  
 
 ### Requirements
 
@@ -45,6 +82,7 @@ Laravel 11 is intentionally not supported — `laravel/pao` (an essential dev-ou
 
 ```bash
 composer require --dev sandermuller/package-boost-laravel
+
 
 ```
 `post-install-cmd` / `post-update-cmd` are wired to `BoostCore\Scripts\BoostAutoSync::run`. Skip with `BOOST_SKIP_AUTOSYNC=1` if you want to opt out of auto-sync on `composer install`.

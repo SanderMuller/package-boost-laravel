@@ -7,13 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.4.0...HEAD)
 
-### Added
-
-- Initial scaffolding. Depends on `sandermuller/boost-core` + `sandermuller/package-boost-php` (currently via path repositories).
-- 3 Laravel-flavored skills: `package-development`, `cross-version-laravel-support`, `ci-matrix-troubleshooting`.
-- `McpJsonEmitter` (FileEmitter implementation) — emits `.mcp.json` when `laravel/boost` is detected and Claude Code is active.
-- Inherits 5 framework-agnostic skills from `package-boost-php` via Composer dep resolution.
-
 ## [0.4.0](https://github.com/sandermuller/package-boost-laravel/compare/0.3.0...0.4.0) - 2026-05-20
 
 Tracks the `boost-core` 0.4.0 family release. `package-boost-laravel`'s own surface — `McpJsonEmitter`, the service provider, the three shipped skills — is unchanged. This release bumps the two `sandermuller/*` dependency constraints so downstream installs pick up the new `boost-core` skill-path layout.

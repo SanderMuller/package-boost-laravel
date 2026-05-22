@@ -5,7 +5,46 @@ All notable changes to `sandermuller/package-boost-laravel` will be documented h
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.6.0...HEAD)
+## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.7.0...HEAD)
+
+## [0.7.0](https://github.com/sandermuller/package-boost-laravel/compare/0.6.0...0.7.0) - 2026-05-22
+
+Adopts the `boost-core` 0.6 family — `boost-core` 0.6.0 retired its Composer plugin (now `type: library`), so this release migrates `package-boost-laravel` off the plugin onto explicit script wiring. Bumps both `sandermuller/*` constraints; pairs with `package-boost-php` 0.7.0, which carries the matching `boost-core ^0.6` requirement.
+
+### Breaking — consumer auto-sync is now opt-in
+
+Pre-0.7.0, installing `package-boost-laravel` (which pulled `boost-core` as a Composer plugin) auto-synced `.ai/` to `.claude/`, `.github/`, etc. on every `composer install`. `boost-core` 0.6.0 retired that plugin, so the auto-sync no longer happens automatically. If you want it to keep happening, wire the script callback into your project's `composer.json`:
+
+```json
+"scripts": {
+    "post-install-cmd": ["SanderMuller\\BoostCore\\Scripts\\BoostAutoSync::run"],
+    "post-update-cmd":  ["SanderMuller\\BoostCore\\Scripts\\BoostAutoSync::run"]
+}
+
+```
+A dependency's own `post-install-cmd` does not fire in a consuming project — only the root package's scripts run — so this must live in *your* `composer.json`. Otherwise, run `vendor/bin/boost sync` yourself (e.g. in CI). `BOOST_SKIP_AUTOSYNC=1` still disables the callback.
+
+See [`boost-core`'s 0.5 → 0.6 UPGRADING](https://github.com/sandermuller/boost-core/blob/main/UPGRADING.md#05--06) for the full migration story.
+
+### Changed
+
+- `sandermuller/boost-core`: `^0.5` → `^0.6`
+- `sandermuller/package-boost-php`: `^0.6` → `^0.7`
+- `config.allow-plugins`: drop `sandermuller/boost-core` — no longer a plugin in 0.6.0. `sandermuller/package-boost-php` stays — it remains `type: composer-plugin`.
+- `post-install-cmd` / `post-update-cmd`: now call `BoostAutoSync::run` (was `::runWithSummary`). `::run` is silent on no-op installs and only emits the sync summary when files actually changed — the documented behaviour for auto-firing hooks. (`::runWithSummary` is for user-invoked scripts where silence reads as a no-op.)
+- README updated: `composer boost:install` → `vendor/bin/boost install` (the plugin-era subcommand is gone with the plugin), and the consumer auto-sync claim is reworded to match the opt-in reality.
+- Test setup: `McpJsonEmitterTest`'s `BoostConfig` constructor call adds the new required `commandsPath` parameter introduced in `boost-core` 0.6.0. `McpJsonEmitter`'s own public API is unchanged.
+- `.gitignore` boost-managed block picked up `.claude/commands/` and `.github/prompts/` from `boost-core` 0.6.0's new commands-path sync.
+
+### Upgrading
+
+```bash
+composer update sandermuller/package-boost-laravel --with-all-dependencies
+
+```
+`--with-all-dependencies` lets composer move `boost-core` and `package-boost-php` together. If you want to keep automatic sync on `composer install`, also add the `BoostAutoSync::run` callback to your project's `post-install-cmd` / `post-update-cmd` (see Breaking above).
+
+**Full Changelog**: https://github.com/SanderMuller/package-boost-laravel/compare/0.6.0...0.7.0
 
 ## [0.6.0](https://github.com/sandermuller/package-boost-laravel/compare/0.5.0...0.6.0) - 2026-05-22
 
@@ -59,6 +98,7 @@ Tracks the `boost-core` 0.4.0 family release. `package-boost-laravel`'s own surf
 
 
 
+
 ```
 The slug now carries the full Composer `vendor/package` name with the slash rewritten to `__` — a sequence the Composer name spec forbids, so the mapping is collision-free across vendors. A one-time auto-migration with an ownership check relocates existing user-scope skill directories on the next sync; no manual action required.
 
@@ -75,6 +115,7 @@ Both constraints move together — `package-boost-php` 0.4.0 is the floor and it
 
 ```bash
 composer update sandermuller/package-boost-laravel
+
 
 
 
@@ -118,6 +159,7 @@ Laravel 11 is intentionally not supported — `laravel/pao` (an essential dev-ou
 
 ```bash
 composer require --dev sandermuller/package-boost-laravel
+
 
 
 

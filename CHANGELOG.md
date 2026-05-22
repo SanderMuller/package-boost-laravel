@@ -5,7 +5,27 @@ All notable changes to `sandermuller/package-boost-laravel` will be documented h
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.5.0...HEAD)
+## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.6.0...HEAD)
+
+## [0.6.0](https://github.com/sandermuller/package-boost-laravel/compare/0.5.0...0.6.0) - 2026-05-22
+
+Adds a Laravel-package authoring guideline and pairs it with `package-boost-php`'s restored `foundation.md`. Tracks the `package-boost-php` 0.6.0 family release.
+
+### Added
+
+- **`resources/boost/guidelines/laravel-packages.md`** — a guideline for Laravel-package authors covering the Testbench context, the service provider as a package's entry point, `vendor/bin/testbench` vs `php artisan`, the `laravel/boost` command table, `testbench.yaml` provider registration, and cross-version Laravel support. Auto-discovered by `boost-core`'s `VendorScanner` — `resources/boost/guidelines/` is the default path, so no `composer.json` change is needed. It **supplements** `package-boost-php`'s `foundation.md`; a consumer receives both files, composed. It is named `laravel-packages.md`, not `foundation.md`, to avoid a vendor-vs-vendor guideline name collision with the `foundation.md` inherited transitively from `package-boost-php`.
+
+### Changed
+
+- `sandermuller/package-boost-php`: `^0.5` → `^0.6`
+- `post-install-cmd` / `post-update-cmd` now call `BoostAutoSync::runWithSummary` instead of `BoostAutoSync::run` — `composer install` / `update` print a summary of the files synced.
+- Removed the `extra.branch-alias` block — the family resolves releases by published tag, not `dev-main` snapshots. No consumer impact.
+
+`package-boost-php` 0.6.0 ships the restored `foundation.md`. A caret constraint on a `0.x` version stops at the minor, so `^0.5` would not resolve `0.6.0` — without this bump a consumer would receive `laravel-packages.md` with no `foundation.md` to compose against. `sandermuller/boost-core` stays at `^0.5`: `package-boost-php` 0.6.0 still requires `boost-core ^0.5`, so the direct constraint here is unchanged.
+
+This release is non-breaking for consumers — the new guideline file is purely additive and the constraint bump only widens the resolvable `package-boost-php` range.
+
+**Full Changelog**: https://github.com/SanderMuller/package-boost-laravel/compare/0.5.0...0.6.0
 
 ## [0.5.0](https://github.com/sandermuller/package-boost-laravel/compare/0.4.0...0.5.0) - 2026-05-21
 

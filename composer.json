@@ -26,7 +26,7 @@
         "illuminate/contracts": "^12.0||^13.0",
         "illuminate/support": "^12.0||^13.0",
         "sandermuller/boost-core": "^0.5",
-        "sandermuller/package-boost-php": "^0.5"
+        "sandermuller/package-boost-php": "^0.6"
     },
     "require-dev": {
         "driftingly/rector-laravel": "^2.3",
@@ -63,9 +63,6 @@
         }
     },
     "extra": {
-        "branch-alias": {
-            "dev-main": "0.5.x-dev"
-        },
         "boost": {
             "emitters": [
                 "SanderMuller\\PackageBoostLaravel\\Emitters\\McpJsonEmitter"
@@ -91,10 +88,10 @@
             "@php vendor/bin/testbench serve --ansi"
         ],
         "post-install-cmd": [
-            "SanderMuller\\BoostCore\\Scripts\\BoostAutoSync::run"
+            "SanderMuller\\BoostCore\\Scripts\\BoostAutoSync::runWithSummary"
         ],
         "post-update-cmd": [
-            "SanderMuller\\BoostCore\\Scripts\\BoostAutoSync::run"
+            "SanderMuller\\BoostCore\\Scripts\\BoostAutoSync::runWithSummary"
         ],
         "test": "vendor/bin/pest",
         "test-coverage": "vendor/bin/pest --coverage",

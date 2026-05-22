@@ -10,12 +10,14 @@ on:
       - 'phpstan.neon.dist'
       - 'phpstan-baseline.neon'
       - '.github/workflows/phpstan.yml'
+      - 'composer.json'
   pull_request:
     paths:
       - '**.php'
       - 'phpstan.neon.dist'
       - 'phpstan-baseline.neon'
       - '.github/workflows/phpstan.yml'
+      - 'composer.json'
 
 concurrency:
   group: phpstan-${{ github.ref }}

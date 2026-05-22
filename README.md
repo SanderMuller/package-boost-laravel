@@ -5,7 +5,7 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/sandermuller/package-boost-laravel.svg?style=flat-square)](https://packagist.org/packages/sandermuller/package-boost-laravel)
 [![License](https://img.shields.io/packagist/l/sandermuller/package-boost-laravel.svg?style=flat-square)](LICENSE)
 
-> AI agent skills for Laravel package authors. Adds three Laravel-flavored skills (`package-development` for Testbench, `cross-version-laravel-support` for `^12||^13` constraints, `ci-matrix-troubleshooting` for resolve/floor diagnostics) plus `McpJsonEmitter` (writes `.mcp.json` when `laravel/boost` + `orchestra/testbench` are installed and Claude Code is an active agent). Inherits five framework-agnostic package-author skills from [`package-boost-php`](https://github.com/sandermuller/package-boost-php).
+> AI agent skills and guidelines for Laravel package authors. Adds three Laravel-flavored skills (`package-development` for Testbench, `cross-version-laravel-support` for `^12||^13` constraints, `ci-matrix-troubleshooting` for resolve/floor diagnostics) and the `laravel-packages` guideline (Testbench context, `vendor/bin/testbench` vs `php artisan`, cross-version Laravel support), plus `McpJsonEmitter` (writes `.mcp.json` when `laravel/boost` + `orchestra/testbench` are installed and Claude Code is an active agent). Inherits the framework-agnostic package-author skills and `foundation` guideline from [`package-boost-php`](https://github.com/sandermuller/package-boost-php).
 
 ## Install
 

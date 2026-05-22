@@ -13,4 +13,4 @@ use SanderMuller\BoostCore\Enums\Agent;
  *
  * Docs: https://github.com/sandermuller/boost-core
  */
-return BoostConfig::configure()->withAgents([Agent::CLAUDE_CODE, Agent::COPILOT, Agent::CODEX])->withAllowedVendors(['sandermuller/package-boost-laravel', 'sandermuller/package-boost-php', 'laravel/mcp', 'stolt/lean-package-validator'])->withDisabledEmitters([]);
+return BoostConfig::configure()->withAgents([Agent::CLAUDE_CODE, Agent::COPILOT, Agent::CODEX])->withAllowedVendors(['sandermuller/boost-skills', 'sandermuller/package-boost-laravel', 'sandermuller/package-boost-php', 'laravel/mcp', 'stolt/lean-package-validator'])->withTags('php', 'github')->withDisabledEmitters([]);

@@ -28,6 +28,7 @@ function makeConfig(array $agents): BoostConfig
         allowedVendors: [],
         skillsPath: '/tmp/.ai/skills',
         guidelinesPath: '/tmp/.ai/guidelines',
+        commandsPath: '/tmp/.ai/commands',
         disabledEmitters: [],
     );
 }

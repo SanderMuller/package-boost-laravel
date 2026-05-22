@@ -16,13 +16,13 @@ composer require --dev sandermuller/package-boost-laravel
 ## Usage
 
 ```bash
-composer boost:install   # interactive picker: agents + vendor allowlist (auto-generates boost.php)
+vendor/bin/boost install   # interactive picker: agents + vendor allowlist (auto-generates boost.php)
 vendor/bin/boost sync      # fan out skills + guidelines to selected agents
 ```
 
 `McpJsonEmitter` runs automatically during `boost sync` when `laravel/boost` + `orchestra/testbench` are in your dep tree and `Agent::CLAUDE_CODE` is in your active agents.
 
-Generated agent dirs are added to `.gitignore` automatically and regenerated on every `composer install` — edit `.ai/` only. Set `BOOST_SKIP_AUTOSYNC=1` to disable.
+Generated agent dirs are added to `.gitignore` automatically — edit `.ai/` only. Run `vendor/bin/boost sync` to regenerate them, or wire `SanderMuller\BoostCore\Scripts\BoostAutoSync::run` into your project's `post-install-cmd` / `post-update-cmd` (boost-core 0.6.0 retired its Composer plugin, so consumer auto-sync is opt-in now). Set `BOOST_SKIP_AUTOSYNC=1` to disable.
 
 ## License
 

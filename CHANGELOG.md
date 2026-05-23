@@ -5,7 +5,23 @@ All notable changes to `sandermuller/package-boost-laravel` will be documented h
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.7.1...HEAD)
+## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.7.2...HEAD)
+
+## [0.7.2](https://github.com/sandermuller/package-boost-laravel/compare/0.7.1...0.7.2) - 2026-05-23
+
+### Internal
+
+- **Dropped the redundant `repositories: vcs` entry for `sandermuller/package-boost-php`.** That entry predated `package-boost-php`'s 0.3.0 Packagist listing. Since then, every `composer` resolve hit `github.com` for the vcs source before falling back to Packagist anyway. The roundtrip caused a CI flake during the 0.7.1 tag-ref re-fire (`Could not authenticate against github.com` on the `P8.4 / L12 / prefer-stable` leg). Removing tightens resolution to Packagist only and eliminates the auth-prone roundtrip.
+- **Deleted two stale loose `.ai/skills/` files.** `boost-config-shape.md` (local 78 lines vs canonical 107) is owned by `sandermuller/boost-core`; `writing-file-emitter.md` (23 diff lines) is owned by `sandermuller/package-boost-php`. Both already source into `.claude/skills/` from their vendor packages via `boost sync` (the project allowlists both), so the loose copies were dead code that drifted independently.
+
+### Consumer impact: none
+
+- `resources/boost/skills/` and `resources/boost/guidelines/laravel-packages.md` — untouched.
+- `McpJsonEmitter` + service provider — untouched.
+- `composer.json` `require` / `require-dev` — untouched. Only `repositories` (dev-only metadata for composer's resolve path) shrunk.
+- `.ai/` is `export-ignore`d, so the deleted files were never in the Composer archive.
+
+**Full Changelog**: https://github.com/SanderMuller/package-boost-laravel/compare/0.7.1...0.7.2
 
 ## [0.7.1](https://github.com/sandermuller/package-boost-laravel/compare/0.7.0...0.7.1) - 2026-05-23
 
@@ -32,6 +48,7 @@ Pre-0.7.0, installing `package-boost-laravel` (which pulled `boost-core` as a Co
 }
 
 
+
 ```
 A dependency's own `post-install-cmd` does not fire in a consuming project — only the root package's scripts run — so this must live in *your* `composer.json`. Otherwise, run `vendor/bin/boost sync` yourself (e.g. in CI). `BOOST_SKIP_AUTOSYNC=1` still disables the callback.
 
@@ -51,6 +68,7 @@ See [`boost-core`'s 0.5 → 0.6 UPGRADING](https://github.com/sandermuller/boost
 
 ```bash
 composer update sandermuller/package-boost-laravel --with-all-dependencies
+
 
 
 ```
@@ -112,6 +130,7 @@ Tracks the `boost-core` 0.4.0 family release. `package-boost-laravel`'s own surf
 
 
 
+
 ```
 The slug now carries the full Composer `vendor/package` name with the slash rewritten to `__` — a sequence the Composer name spec forbids, so the mapping is collision-free across vendors. A one-time auto-migration with an ownership check relocates existing user-scope skill directories on the next sync; no manual action required.
 
@@ -128,6 +147,7 @@ Both constraints move together — `package-boost-php` 0.4.0 is the floor and it
 
 ```bash
 composer update sandermuller/package-boost-laravel
+
 
 
 
@@ -173,6 +193,7 @@ Laravel 11 is intentionally not supported — `laravel/pao` (an essential dev-ou
 
 ```bash
 composer require --dev sandermuller/package-boost-laravel
+
 
 
 

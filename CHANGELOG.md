@@ -5,7 +5,17 @@ All notable changes to `sandermuller/package-boost-laravel` will be documented h
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.7.0...HEAD)
+## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.7.1...HEAD)
+
+## [0.7.1](https://github.com/sandermuller/package-boost-laravel/compare/0.7.0...0.7.1) - 2026-05-23
+
+### Internal
+
+- **Adopted `sandermuller/boost-skills ^1.1`** as a dev dep, matching sibling `package-boost-php`. The 11 generic dev-tooling skills (`ai-guidelines`, `autoresearch`, `backend-quality`, `bug-fixing`, `code-review`, `codex-review`, `evaluate`, `implement-spec`, `pr-review-feedback`, `pre-release`, `write-spec`) are now sourced from this canonical vendor package instead of stale local `.ai/skills/` copies that drifted independently.
+- **Pruned 11 stale `.ai/skills/` dev-copy dirs.** Kept the bespoke entries: `profile-app/` (no boost-skills equivalent), and the loose `boost-config-shape.md` + `writing-file-emitter.md` files (those are stale copies of `package-boost-php`-owned skills — separate drift-reconciliation track, not part of this change).
+- **Wired `boost-skills` into `boost.php`** — added `sandermuller/boost-skills` to `withAllowedVendors()` and declared `withTags('php', 'github')`. Without these, `boost sync` would silently filter `boost-skills` out (vendor allowlist) and tag-gated skills (`pre-release`, `backend-quality`, `autoresearch`, `pr-review-feedback`) would not ship even when the vendor was allowed.
+
+**Full Changelog**: https://github.com/SanderMuller/package-boost-laravel/compare/0.7.0...0.7.1
 
 ## [0.7.0](https://github.com/sandermuller/package-boost-laravel/compare/0.6.0...0.7.0) - 2026-05-22
 
@@ -20,6 +30,7 @@ Pre-0.7.0, installing `package-boost-laravel` (which pulled `boost-core` as a Co
     "post-install-cmd": ["SanderMuller\\BoostCore\\Scripts\\BoostAutoSync::run"],
     "post-update-cmd":  ["SanderMuller\\BoostCore\\Scripts\\BoostAutoSync::run"]
 }
+
 
 ```
 A dependency's own `post-install-cmd` does not fire in a consuming project — only the root package's scripts run — so this must live in *your* `composer.json`. Otherwise, run `vendor/bin/boost sync` yourself (e.g. in CI). `BOOST_SKIP_AUTOSYNC=1` still disables the callback.
@@ -40,6 +51,7 @@ See [`boost-core`'s 0.5 → 0.6 UPGRADING](https://github.com/sandermuller/boost
 
 ```bash
 composer update sandermuller/package-boost-laravel --with-all-dependencies
+
 
 ```
 `--with-all-dependencies` lets composer move `boost-core` and `package-boost-php` together. If you want to keep automatic sync on `composer install`, also add the `BoostAutoSync::run` callback to your project's `post-install-cmd` / `post-update-cmd` (see Breaking above).
@@ -99,6 +111,7 @@ Tracks the `boost-core` 0.4.0 family release. `package-boost-laravel`'s own surf
 
 
 
+
 ```
 The slug now carries the full Composer `vendor/package` name with the slash rewritten to `__` — a sequence the Composer name spec forbids, so the mapping is collision-free across vendors. A one-time auto-migration with an ownership check relocates existing user-scope skill directories on the next sync; no manual action required.
 
@@ -115,6 +128,7 @@ Both constraints move together — `package-boost-php` 0.4.0 is the floor and it
 
 ```bash
 composer update sandermuller/package-boost-laravel
+
 
 
 
@@ -159,6 +173,7 @@ Laravel 11 is intentionally not supported — `laravel/pao` (an essential dev-ou
 
 ```bash
 composer require --dev sandermuller/package-boost-laravel
+
 
 
 

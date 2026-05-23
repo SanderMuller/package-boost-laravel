@@ -123,11 +123,5 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true,
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/sandermuller/package-boost-php"
-        }
-    ]
+    "prefer-stable": true
 }

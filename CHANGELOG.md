@@ -5,7 +5,24 @@ All notable changes to `sandermuller/package-boost-laravel` will be documented h
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.7.2...HEAD)
+## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.7.3...HEAD)
+
+## [0.7.3](https://github.com/sandermuller/package-boost-laravel/compare/0.7.2...0.7.3) - 2026-05-25
+
+### Changed
+
+- **`sandermuller/boost-core` constraint widened to `^0.7`** (was `^0.6`). Pulls in [boost-core 0.7.0](https://github.com/SanderMuller/boost-core/releases/tag/0.7.0) — additive release; the new `withRemoteSkills(...)`, `SkillRenderer` plugin contract (`@experimental`), and `SyncEngine::sync` injection params are opt-in. No migration required.
+- **`sandermuller/package-boost-php` constraint widened to `^0.9`** (was `^0.7`). Pulls in [package-boost-php 0.9.0](https://github.com/SanderMuller/package-boost-php/releases/tag/0.9.0) — drops the Composer plugin. Consumers scripted on `composer package-boost-php:lean` / `composer package-boost-php:gitattributes` must switch to `vendor/bin/package-boost-php <cmd>`. See [package-boost-php's UPGRADING](https://github.com/SanderMuller/package-boost-php/blob/main/UPGRADING.md) for the full migration.
+- **Dropped `sandermuller/package-boost-php: true` from `config.allow-plugins`** — the dependency is no longer a plugin. Composer no longer prompts `Do you trust ...` on install / update. Consumers can drop the entry from their own `composer.json` on cleanup; leaving it is harmless.
+
+### Consumer impact
+
+- **Auto-syncs through `BoostAutoSync::run`** keep working unchanged.
+- **`McpJsonEmitter` + service provider** — untouched.
+- **`resources/boost/skills/` + `resources/boost/guidelines/laravel-packages.md`** — untouched.
+- **Action only required** if a CI config or developer script invoked `composer package-boost-php:*` directly — swap to `vendor/bin/package-boost-php <cmd>`.
+
+**Full Changelog**: https://github.com/SanderMuller/package-boost-laravel/compare/0.7.2...0.7.3
 
 ## [0.7.2](https://github.com/sandermuller/package-boost-laravel/compare/0.7.1...0.7.2) - 2026-05-23
 
@@ -49,6 +66,7 @@ Pre-0.7.0, installing `package-boost-laravel` (which pulled `boost-core` as a Co
 
 
 
+
 ```
 A dependency's own `post-install-cmd` does not fire in a consuming project — only the root package's scripts run — so this must live in *your* `composer.json`. Otherwise, run `vendor/bin/boost sync` yourself (e.g. in CI). `BOOST_SKIP_AUTOSYNC=1` still disables the callback.
 
@@ -68,6 +86,7 @@ See [`boost-core`'s 0.5 → 0.6 UPGRADING](https://github.com/sandermuller/boost
 
 ```bash
 composer update sandermuller/package-boost-laravel --with-all-dependencies
+
 
 
 
@@ -131,6 +150,7 @@ Tracks the `boost-core` 0.4.0 family release. `package-boost-laravel`'s own surf
 
 
 
+
 ```
 The slug now carries the full Composer `vendor/package` name with the slash rewritten to `__` — a sequence the Composer name spec forbids, so the mapping is collision-free across vendors. A one-time auto-migration with an ownership check relocates existing user-scope skill directories on the next sync; no manual action required.
 
@@ -147,6 +167,7 @@ Both constraints move together — `package-boost-php` 0.4.0 is the floor and it
 
 ```bash
 composer update sandermuller/package-boost-laravel
+
 
 
 
@@ -193,6 +214,7 @@ Laravel 11 is intentionally not supported — `laravel/pao` (an essential dev-ou
 
 ```bash
 composer require --dev sandermuller/package-boost-laravel
+
 
 
 

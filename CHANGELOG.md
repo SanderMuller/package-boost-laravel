@@ -5,9 +5,7 @@ All notable changes to `sandermuller/package-boost-laravel` will be documented h
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.8.0...HEAD)
-
-## [0.8.0](https://github.com/sandermuller/package-boost-laravel/compare/0.7.3...0.8.0) - 2026-05-27
+## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.7.3...HEAD)
 
 Adopts the `package-boost-php` 0.10 line and the `boost-core` 0.8 line. README rewritten end-to-end against the sandermuller boost-family README strategy — 29 → 110 lines, in the 80-120 toolkit-package target.
 
@@ -16,7 +14,7 @@ Adopts the `package-boost-php` 0.10 line and the `boost-core` 0.8 line. README r
 - **`sandermuller/boost-core` floor `^0.7` → `^0.8`.** Pulls in [boost-core 0.8.0](https://github.com/SanderMuller/boost-core/releases/tag/0.8.0) (transitively, via the package-boost-php bump below). Downstream consumers pinned at the old lower bound need to widen their own constraints.
 - **`sandermuller/package-boost-php` floor `^0.9` → `^0.10`.** Pulls in [package-boost-php 0.10.0](https://github.com/SanderMuller/package-boost-php/releases/tag/0.10.0). That release migrated the `readme`, `release-notes`, and `upgrading` skills out to `sandermuller/boost-skills` (1.6.0+) under the `release-automation` opt-in tag. Consumers whose `boost.php` already allowlists `sandermuller/boost-skills` and declares `'release-automation'` in `withTags(...)` see no skill loss; otherwise add both. See [package-boost-php's UPGRADING](https://github.com/SanderMuller/package-boost-php/blob/main/UPGRADING.md) and this package's new [UPGRADING.md](UPGRADING.md).
 
-Pre-1.0 Composer semver collapses minor and patch into "potentially breaking" — floor narrowing for downstreams is treated as breaking here in spirit, even though the version number is a minor bump.
+Pre-1.0 Composer semver collapses minor and patch into "potentially breaking" — floor narrowing for downstreams is treated as breaking here in spirit, even though the next version number will be a minor bump.
 
 ### Changed
 
@@ -29,8 +27,6 @@ Pre-1.0 Composer semver collapses minor and patch into "potentially breaking" �
 - **`resources/boost/skills/` + `resources/boost/guidelines/laravel-packages.md`** — untouched.
 - **Auto-syncs through `BoostAutoSync::run`** — untouched.
 - **Action required** when bumping past `0.7.3`: widen your `package-boost-laravel` constraint to `^0.8`. If you transitively pin `package-boost-php: ^0.9`, bump to `^0.10` to avoid the upstream skill-migration overlap window. See [UPGRADING.md](UPGRADING.md) for the boost-skills allowlist + `release-automation` tag steps if you have not already adopted them.
-
-**Full Changelog**: https://github.com/SanderMuller/package-boost-laravel/compare/0.7.3...0.8.0
 
 ## [0.7.3](https://github.com/sandermuller/package-boost-laravel/compare/0.7.2...0.7.3) - 2026-05-25
 

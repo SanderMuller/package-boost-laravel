@@ -1,6 +1,5 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 use SanderMuller\BoostCore\Config\BoostConfig;
 use SanderMuller\BoostCore\Enums\Agent;
 use SanderMuller\BoostCore\Enums\Tag;
@@ -15,7 +14,11 @@ use SanderMuller\BoostCore\Enums\Tag;
  * Docs: https://github.com/sandermuller/boost-core
  */
 return BoostConfig::configure()
-    ->withAgents([Agent::CLAUDE_CODE, Agent::COPILOT, Agent::CODEX])
+    ->withAgents([
+        Agent::CLAUDE_CODE,
+        Agent::COPILOT,
+        Agent::CODEX,
+    ])
     ->withAllowedVendors([
         'sandermuller/boost-skills',
         'sandermuller/package-boost-laravel',
@@ -23,4 +26,9 @@ return BoostConfig::configure()
         'laravel/mcp',
         'stolt/lean-package-validator',
     ])
-    ->withTags(Tag::Php, Tag::Laravel, Tag::Github, 'release-automation');
+    ->withTags(
+        Tag::Php,
+        Tag::Laravel,
+        Tag::Github,
+        'release-automation',
+    );

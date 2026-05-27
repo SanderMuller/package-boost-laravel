@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.8.0](https://github.com/sandermuller/package-boost-laravel/compare/0.7.3...0.8.0) - 2026-05-27
 
-Adopts the `package-boost-php` 0.10 line and the `boost-core` 0.8 line. README rewritten end-to-end against the [sandermuller boost-family README strategy](https://github.com/sandermuller/project-boost-laravel/blob/main/internal/family-readme-strategy.md) — 29 → 110 lines, in the 80-120 toolkit-package target.
+Adopts the `package-boost-php` 0.10 line and the `boost-core` 0.8 line. README rewritten end-to-end against the sandermuller boost-family README strategy — 29 → 110 lines, in the 80-120 toolkit-package target.
 
 ### Breaking — constraint floors raised
 

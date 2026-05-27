@@ -5,7 +5,32 @@ All notable changes to `sandermuller/package-boost-laravel` will be documented h
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.7.3...HEAD)
+## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.8.0...HEAD)
+
+## [0.8.0](https://github.com/sandermuller/package-boost-laravel/compare/0.7.3...0.8.0) - 2026-05-27
+
+Adopts the `package-boost-php` 0.10 line and the `boost-core` 0.8 line. README rewritten end-to-end against the [sandermuller boost-family README strategy](https://github.com/sandermuller/project-boost-laravel/blob/main/internal/family-readme-strategy.md) — 29 → 110 lines, in the 80-120 toolkit-package target.
+
+### Breaking — constraint floors raised
+
+- **`sandermuller/boost-core` floor `^0.7` → `^0.8`.** Pulls in [boost-core 0.8.0](https://github.com/SanderMuller/boost-core/releases/tag/0.8.0) (transitively, via the package-boost-php bump below). Downstream consumers pinned at the old lower bound need to widen their own constraints.
+- **`sandermuller/package-boost-php` floor `^0.9` → `^0.10`.** Pulls in [package-boost-php 0.10.0](https://github.com/SanderMuller/package-boost-php/releases/tag/0.10.0). That release migrated the `readme`, `release-notes`, and `upgrading` skills out to `sandermuller/boost-skills` (1.6.0+) under the `release-automation` opt-in tag. Consumers whose `boost.php` already allowlists `sandermuller/boost-skills` and declares `'release-automation'` in `withTags(...)` see no skill loss; otherwise add both. See [package-boost-php's UPGRADING](https://github.com/SanderMuller/package-boost-php/blob/main/UPGRADING.md) and this package's new [UPGRADING.md](UPGRADING.md).
+
+Pre-1.0 Composer semver collapses minor and patch into "potentially breaking" — floor narrowing for downstreams is treated as breaking here in spirit, even though the version number is a minor bump.
+
+### Changed
+
+- **README rewritten** per the family-readme strategy. Adds the Laravel Boost compatibility badge, the canonical "Which package fits your role?" routing table, and a McpJsonEmitter-led "What you get" section. Three-bullet Coexistence-and-inheritance section frames the three relationships this package sits inside (inherits from `package-boost-php`, coexists with `laravel/boost` in the test app, serves Laravel-package projects).
+- **Dogfood `boost.php` hygiene.** Added `Tag::Laravel` alongside the existing `Tag::Php` and `Tag::Github` (single source of consumer truth, matches the README example a Laravel-package author would copy day-one). Stripped the no-op `->withDisabledEmitters([])` chain.
+
+### Consumer impact
+
+- **`McpJsonEmitter` + service provider** — untouched. The emitter still gates on `laravel/boost` + `orchestra/testbench` + `Agent::CLAUDE_CODE`.
+- **`resources/boost/skills/` + `resources/boost/guidelines/laravel-packages.md`** — untouched.
+- **Auto-syncs through `BoostAutoSync::run`** — untouched.
+- **Action required** when bumping past `0.7.3`: widen your `package-boost-laravel` constraint to `^0.8`. If you transitively pin `package-boost-php: ^0.9`, bump to `^0.10` to avoid the upstream skill-migration overlap window. See [UPGRADING.md](UPGRADING.md) for the boost-skills allowlist + `release-automation` tag steps if you have not already adopted them.
+
+**Full Changelog**: https://github.com/SanderMuller/package-boost-laravel/compare/0.7.3...0.8.0
 
 ## [0.7.3](https://github.com/sandermuller/package-boost-laravel/compare/0.7.2...0.7.3) - 2026-05-25
 

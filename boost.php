@@ -23,5 +23,4 @@ return BoostConfig::configure()
         'laravel/mcp',
         'stolt/lean-package-validator',
     ])
-    ->withTags(Tag::Php, Tag::Github, 'release-automation')
-    ->withDisabledEmitters([]);
+    ->withTags(Tag::Php, Tag::Laravel, Tag::Github, 'release-automation');

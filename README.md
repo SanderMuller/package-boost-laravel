@@ -73,7 +73,7 @@ return BoostConfig::configure()
         'sandermuller/package-boost-laravel',
         'sandermuller/package-boost-php',
     ])
-    ->withTags(Tag::Php, Tag::Laravel, 'release-automation');
+    ->withTags(Tag::Php, Tag::Laravel, Tag::Github, 'release-automation');
 ```
 
 The `release-automation` tag pulls the release-flow skills from `sandermuller/boost-skills`. Full `BoostConfig` reference lives in [`sandermuller/boost-core`'s README](https://github.com/sandermuller/boost-core#readme).

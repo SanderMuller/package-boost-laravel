@@ -5,31 +5,40 @@ All notable changes to `sandermuller/package-boost-laravel` will be documented h
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.7.3...HEAD)
+## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.8.0...HEAD)
 
-Adopts the `boost-core` 0.10 line, the `package-boost-php` 0.12 line, and the README rewrite that had been sitting on `main`.
+## [0.8.0](https://github.com/sandermuller/package-boost-laravel/compare/0.7.3...0.8.0) - 2026-05-29
 
-### Breaking — constraint floors raised
+<!-- verified-sha: bc971a85c5e4e0d26e3b310de0301db5cf5981ea -->
+### What's changed
 
-- **`sandermuller/boost-core: ^0.7` → `^0.10`.** Pulls in [boost-core 0.10.0](https://github.com/SanderMuller/boost-core/releases/tag/0.10.0), the wrong-entry-point ergonomics cycle. Adds a `boost doctor` entry-point mismatch banner and a three-case diagnostic split, gated on `project-boost-laravel` presence so the engine surface stays framework-agnostic. The 0.10.0 line inherits 0.9.6's path-ownership cleanup contract (deletes retired emit paths like `.github/copilot-instructions.md` on `boost sync` when the corresponding agent is active) and 0.9.0's Project Conventions move (CLAUDE.md YAML body → `boost.php`'s `->withConventions([...])` chain). This package authors no conventions, so the default `[]` applies and no migration command is required.
-- **`sandermuller/package-boost-php: ^0.9` → `^0.12`.** Pulls in [package-boost-php 0.12.0](https://github.com/SanderMuller/package-boost-php/releases/tag/0.12.0), which floor-bumps boost-core to `^0.10` to inherit the wrong-entry-point cycle. The skill migration introduced in `package-boost-php` 0.10.0 still applies: `readme`, `release-notes`, `upgrading` ship from `sandermuller/boost-skills` 1.6.0+ under the `release-automation` opt-in tag.
+#### Breaking
 
-Pre-1.0 Composer semver collapses minor and patch into "potentially breaking" — floor narrowing for downstreams is treated as breaking here in spirit, even though the next version number will be a minor bump.
+- Raised `sandermuller/boost-core` floor `^0.7` → `^0.10`. The 0.10 line ships the wrong-entry-point ergonomics cycle (`boost doctor` entry-point mismatch banner + `boost tags` three-case diagnostic split, both gated on `project-boost-laravel` presence so the engine surface stays framework-agnostic). The 0.10 line inherits 0.9.6's path-ownership cleanup (retired emit paths like `.github/copilot-instructions.md` are deleted on `boost sync` when the corresponding agent is active) and 0.9.0's Project Conventions move (CLAUDE.md YAML body → `boost.php`'s `->withConventions([...])` chain). This package authors no conventions, so the default `[]` applies and no migration command is required.
+- Raised `sandermuller/package-boost-php` floor `^0.9` → `^0.12`. The 0.10.0 release migrated the `readme`, `release-notes`, and `upgrading` skills out to `sandermuller/boost-skills` 1.6.0+ under the `release-automation` opt-in tag. Consumers whose `boost.php` already allowlists `sandermuller/boost-skills` and declares `'release-automation'` in `withTags(...)` see no skill loss; otherwise add both.
+- `AGENTS.md` and `CLAUDE.md` are now tracked. boost-core 0.8.3 + 0.9.1 dropped them from the boost-managed `.gitignore` block. Both files have marker-bounded regions for rendered guideline content; operator-authored content outside the markers survives `boost sync` round-trips. Both stay `export-ignore`'d, so they do not bloat the Composer archive.
 
-### Changed
+Pre-1.0 Composer semver collapses minor and patch into "potentially breaking" — floor narrowing for downstreams is treated as breaking here in spirit even though the version number is a minor bump.
 
-- **`AGENTS.md` and `CLAUDE.md` are now tracked.** boost-core 0.8.3 + 0.9.1 dropped them from the boost-managed `.gitignore` block. Both files have marker-bounded regions for rendered guideline content; operator-authored content (outside the markers) survives `boost sync` round-trips. Files are still `export-ignore`'d, so they do not bloat the Composer archive.
-- **`.github/copilot-instructions.md` retired.** GitHub Copilot now reads root `AGENTS.md` per the [GitHub Changelog 2025-08-28](https://github.blog/changelog/2025-08-28-copilot-coding-agent-now-supports-agents-md-custom-instructions/); boost-core 0.9.x stops emitting the Copilot-specific file. The boost-managed `.gitignore` block dropped its entry; `boost sync` removes any stale copy.
-- **`.github/skills/` retired.** boost-core 0.9.1 routes Copilot skills to the shared `.agents/skills/` + `AGENTS.md` surface (per the [GitHub Changelog 2025-12-18 for agent skills](https://github.blog/changelog/)); `.github/skills/` is no longer an emitted target and was dropped from the `.gitignore` block.
-- **README rewritten** end-to-end against the sandermuller boost-family README strategy (29 → 110 lines, in the 80-120 toolkit-package target). Adds the Laravel Boost compatibility badge, the canonical "Which package fits your role?" routing table, and a `McpJsonEmitter`-led "What you get" section. Three-bullet Coexistence-and-inheritance section frames the three relationships this package sits inside (inherits from `package-boost-php`, coexists with `laravel/boost` in the test app, serves Laravel-package projects).
-- **Dogfood `boost.php` hygiene.** Added `Tag::Laravel` and `Tag::Pest` alongside the existing `Tag::Php` and `Tag::Github` to source the Laravel- and Pest-tagged skills from `sandermuller/boost-skills`. Stripped the no-op `->withDisabledEmitters([])` chain.
+#### Added
+
+- Rewrote the README end-to-end against the sandermuller boost-family README strategy (29 → 110 lines, in the 80-120 toolkit-package target). Added the Laravel Boost compatibility badge, the canonical "Which package fits your role?" routing table, and a `McpJsonEmitter`-led "What you get" section. The three-bullet Coexistence-and-inheritance section frames the three relationships this package sits inside: inherits from `package-boost-php`, coexists with `laravel/boost` in the test app, serves Laravel-package projects.
+- Added `UPGRADING.md` with the full 0.7.x → 0.8.0 migration path: constraint bumps, `boost-skills` allowlist + `release-automation` opt-in, optional `vendor/bin/boost convert-conventions` for consumers who author Project Conventions, and the re-sync + tracking-flip steps for `AGENTS.md` / `CLAUDE.md`.
+
+#### Internal
+
+- Retired `.github/copilot-instructions.md`. GitHub Copilot reads root `AGENTS.md` per the [GitHub Changelog 2025-08-28](https://github.blog/changelog/2025-08-28-copilot-coding-agent-now-supports-agents-md-custom-instructions/); boost-core 0.9.x stops emitting the Copilot-specific file.
+- Retired `.github/skills/`. boost-core 0.9.1 routes Copilot skills to the shared `.agents/skills/` + root `AGENTS.md` surface per the GitHub Changelog 2025-12-18 update for agent skills.
+- Dogfood `boost.php` hygiene: added `Tag::Laravel` and `Tag::Pest` alongside the existing `Tag::Php` and `Tag::Github` to source the Laravel- and Pest-tagged skills from `sandermuller/boost-skills`. Stripped the no-op `->withDisabledEmitters([])` chain.
 
 ### Consumer impact
 
-- **`McpJsonEmitter` + service provider** — untouched. The emitter still gates on `laravel/boost` + `orchestra/testbench` + `Agent::CLAUDE_CODE`.
-- **`resources/boost/skills/` + `resources/boost/guidelines/laravel-packages.md`** — untouched.
-- **Auto-syncs through `BoostAutoSync::run`** — untouched.
-- **Action required** when bumping past `0.7.3`: widen your `package-boost-laravel` constraint, and update your project's `.gitignore` boost-managed block via `boost sync` so `AGENTS.md` / `CLAUDE.md` / `.github/copilot-instructions.md` / `.github/skills/` switch tracking state per 0.9.x. If you author Project Conventions, run `vendor/bin/boost convert-conventions` once to migrate your CLAUDE.md YAML body into `boost.php->withConventions([...])`. See [UPGRADING.md](UPGRADING.md) for the full migration story.
+- `McpJsonEmitter` + service provider — untouched. The emitter still gates on `laravel/boost` + `orchestra/testbench` + `Agent::CLAUDE_CODE`.
+- `resources/boost/skills/` (`package-development`, `cross-version-laravel-support`, `ci-matrix-troubleshooting`) and `resources/boost/guidelines/laravel-packages.md` — untouched.
+- Auto-syncs through `BoostAutoSync::run` — untouched.
+- Action required when bumping past `0.7.3`: widen the `package-boost-laravel` constraint and let `boost sync` update the project's `.gitignore` boost-managed block. If the project authors Project Conventions, run `vendor/bin/boost convert-conventions` once to migrate the CLAUDE.md YAML body into `boost.php->withConventions([...])`. See [UPGRADING.md](https://github.com/SanderMuller/package-boost-laravel/blob/main/UPGRADING.md) for the full migration story.
+
+**Full Changelog:** https://github.com/SanderMuller/package-boost-laravel/compare/0.7.3...0.8.0
 
 ## [0.7.3](https://github.com/sandermuller/package-boost-laravel/compare/0.7.2...0.7.3) - 2026-05-25
 
@@ -91,6 +100,7 @@ Pre-0.7.0, installing `package-boost-laravel` (which pulled `boost-core` as a Co
 
 
 
+
 ```
 A dependency's own `post-install-cmd` does not fire in a consuming project — only the root package's scripts run — so this must live in *your* `composer.json`. Otherwise, run `vendor/bin/boost sync` yourself (e.g. in CI). `BOOST_SKIP_AUTOSYNC=1` still disables the callback.
 
@@ -110,6 +120,7 @@ See [`boost-core`'s 0.5 → 0.6 UPGRADING](https://github.com/sandermuller/boost
 
 ```bash
 composer update sandermuller/package-boost-laravel --with-all-dependencies
+
 
 
 
@@ -175,6 +186,7 @@ Tracks the `boost-core` 0.4.0 family release. `package-boost-laravel`'s own surf
 
 
 
+
 ```
 The slug now carries the full Composer `vendor/package` name with the slash rewritten to `__` — a sequence the Composer name spec forbids, so the mapping is collision-free across vendors. A one-time auto-migration with an ownership check relocates existing user-scope skill directories on the next sync; no manual action required.
 
@@ -191,6 +203,7 @@ Both constraints move together — `package-boost-php` 0.4.0 is the floor and it
 
 ```bash
 composer update sandermuller/package-boost-laravel
+
 
 
 
@@ -238,6 +251,7 @@ Laravel 11 is intentionally not supported — `laravel/pao` (an essential dev-ou
 
 ```bash
 composer require --dev sandermuller/package-boost-laravel
+
 
 
 

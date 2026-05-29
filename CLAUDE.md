@@ -521,3 +521,12 @@ gate and publishes the release (GitHub UI, `gh`, or otherwise). See
 the `pre-release` skill for the full procedure and the no-release-create
 rule.
 <!-- boost-core:guidelines:end -->
+
+## Project Conventions
+
+<!-- Managed by boost-core. Edit the YAML between the markers; do not remove or move the markers. -->
+<!-- boost-core:conventions:start -->
+```yaml
+schema-version: 1
+```
+<!-- boost-core:conventions:end -->

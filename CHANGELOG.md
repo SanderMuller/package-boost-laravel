@@ -7,12 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.7.3...HEAD)
 
-Adopts the `boost-core` 0.9 line via `package-boost-php` 0.10.1's widened constraint, plus the README rewrite and `package-boost-php` `^0.10` adoption that had been sitting on `main`.
+Adopts the `boost-core` 0.9 line, the `package-boost-php` 0.10 line, and the README rewrite that had been sitting on `main`.
 
 ### Breaking — constraint floors raised
 
-- **`sandermuller/boost-core: ^0.7` → `^0.8 \|\| ^0.9`.** Resolves to [boost-core 0.9.x](https://github.com/SanderMuller/boost-core/releases/tag/0.9.0) when paired with a current resolver. 0.9.0 moves the Project Conventions edit surface from CLAUDE.md's marker-bounded YAML body to `boost.php`'s `->withConventions([...])` chain — `boost.php` is the source of truth, CLAUDE.md is a rendered audit trail. This package authors no conventions, so the default `[]` applies and no migration command is required. Use the widened-OR pattern so consumers with a pinned `^0.8` lockfile keep resolving.
-- **`sandermuller/package-boost-php: ^0.9` → `^0.10.1`.** Pulls in [package-boost-php 0.10.1](https://github.com/SanderMuller/package-boost-php/releases/tag/0.10.1) (the constraint-widener for boost-core). The 0.10.0 → 0.10.1 cycle also released 0.10.2, which absorbs the boost-core 0.9.1 → 0.9.4 patch ladder. The skill migration introduced in `package-boost-php` 0.10.0 still applies: `readme`, `release-notes`, `upgrading` ship from `sandermuller/boost-skills` 1.6.0+ under the `release-automation` opt-in tag.
+- **`sandermuller/boost-core: ^0.7` → `^0.9.6`.** Pulls in [boost-core 0.9.6+](https://github.com/SanderMuller/boost-core/releases/tag/0.9.6). The 0.9.x line moves the Project Conventions edit surface from CLAUDE.md's marker-bounded YAML body to `boost.php`'s `->withConventions([...])` chain, consolidates Copilot under `AGENTS.md`, and (in 0.9.6 specifically) ships the path-ownership cleanup contract that deletes retired emit paths like `.github/copilot-instructions.md` unconditionally on `boost sync` when the corresponding agent is active. The 0.9.6 floor is load-bearing for the documented migration: it guarantees the auto-cleanup behavior UPGRADING.md depends on, rather than leaving 0.9.0–0.9.5 consumers without the deletion. This package authors no conventions, so the default `[]` applies and no migration command is required.
+- **`sandermuller/package-boost-php: ^0.9` → `^0.10.2`.** Pulls in [package-boost-php 0.10.2](https://github.com/SanderMuller/package-boost-php/releases/tag/0.10.2), which absorbs the boost-core 0.9.1 → 0.9.4 patch ladder. The skill migration introduced in `package-boost-php` 0.10.0 still applies: `readme`, `release-notes`, `upgrading` ship from `sandermuller/boost-skills` 1.6.0+ under the `release-automation` opt-in tag.
 
 Pre-1.0 Composer semver collapses minor and patch into "potentially breaking" — floor narrowing for downstreams is treated as breaking here in spirit, even though the next version number will be a minor bump.
 

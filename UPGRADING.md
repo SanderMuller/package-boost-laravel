@@ -2,7 +2,7 @@
 
 ## From 0.7.x to 0.8.0
 
-`0.8.0` widens `sandermuller/boost-core` to `^0.8 || ^0.9` (via `package-boost-php` 0.10.1's matching widen) and adopts `package-boost-php` 0.10.x. Three behavioural changes consumers need to know about live upstream:
+`0.8.0` raises the `sandermuller/boost-core` floor to `^0.9.6` and the `sandermuller/package-boost-php` floor to `^0.10.2`. The 0.9.6 floor is load-bearing — it pins the path-ownership cleanup that removes the retired `.github/copilot-instructions.md` on `boost sync` (see step 4). Three behavioural changes consumers need to know about live upstream:
 
 1. **boost-core 0.9.x** moves Project Conventions from CLAUDE.md's YAML body to `boost.php`'s `->withConventions([...])` chain, switches Copilot from `.github/copilot-instructions.md` to root `AGENTS.md`, and consolidates Copilot skills under `.agents/skills/`.
 2. **package-boost-php 0.10.0** migrated the `readme`, `release-notes`, and `upgrading` skills out to `sandermuller/boost-skills` 1.6.0+ under the `release-automation` opt-in tag.
@@ -19,7 +19,7 @@
 composer update sandermuller/package-boost-laravel --with-dependencies
 ```
 
-If your project pins `sandermuller/package-boost-php` directly, also widen to `^0.10.1` so the boost-core widening takes effect. If you pin `sandermuller/boost-core` directly, use `^0.8 || ^0.9` so `prefer-lowest` consumers keep resolving.
+If your project pins `sandermuller/package-boost-php` or `sandermuller/boost-core` directly, bump those constraints too: `^0.10.2` and `^0.9.6` respectively.
 
 ### 2. Allowlist `sandermuller/boost-skills` and opt into `release-automation`
 
@@ -57,12 +57,11 @@ The command lifts the YAML values into `boost.php`'s `->withConventions([...])` 
 ```bash
 vendor/bin/boost sync
 git add AGENTS.md CLAUDE.md .gitignore
-git rm --cached .github/copilot-instructions.md   # only if it was tracked from a prior 0.8.x sync
 ```
 
 After sync, `.gitignore`'s boost-managed block drops `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, and `.github/skills/`. Add the two surviving files to git so operator-authored content outside the marker-bounded regions persists across machines.
 
-If `.github/copilot-instructions.md` was tracked from an earlier 0.8.x sync, remove it — Copilot now reads root `AGENTS.md` per [GitHub Changelog 2025-08-28](https://github.blog/changelog/2025-08-28-copilot-coding-agent-now-supports-agents-md-custom-instructions/) and boost-core 0.9.x stops emitting it.
+Boost-core 0.9.6's path-ownership cleanup contract handles the retired Copilot file automatically: when `Agent::COPILOT` is in your active agents, `boost sync` deletes `.github/copilot-instructions.md` on disk. If you had it tracked from an earlier 0.8.x sync, the file is gone post-sync — `git status` shows the deletion, stage it. Copilot now reads root `AGENTS.md` per [GitHub Changelog 2025-08-28](https://github.blog/changelog/2025-08-28-copilot-coding-agent-now-supports-agents-md-custom-instructions/).
 
 ### Overlap-window collision
 

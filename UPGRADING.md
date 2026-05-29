@@ -2,7 +2,7 @@
 
 ## From 0.7.x to 0.8.0
 
-`0.8.0` raises the `sandermuller/boost-core` floor to `^0.9.6` and the `sandermuller/package-boost-php` floor to `^0.10.2`. The 0.9.6 floor is load-bearing — it pins the path-ownership cleanup that removes the retired `.github/copilot-instructions.md` on `boost sync` (see step 4). Three behavioural changes consumers need to know about live upstream:
+`0.8.0` raises the `sandermuller/boost-core` floor to `^0.10` and the `sandermuller/package-boost-php` floor to `^0.12`. The 0.10 line inherits 0.9.6's path-ownership cleanup that removes the retired `.github/copilot-instructions.md` on `boost sync` (see step 4) and adds the wrong-entry-point ergonomics cycle (doctor banner + three-case diagnostic split, gated on `project-boost-laravel` presence — does not fire for package-author projects). Three behavioural changes consumers need to know about live upstream:
 
 1. **boost-core 0.9.x** moves Project Conventions from CLAUDE.md's YAML body to `boost.php`'s `->withConventions([...])` chain, switches Copilot from `.github/copilot-instructions.md` to root `AGENTS.md`, and consolidates Copilot skills under `.agents/skills/`.
 2. **package-boost-php 0.10.0** migrated the `readme`, `release-notes`, and `upgrading` skills out to `sandermuller/boost-skills` 1.6.0+ under the `release-automation` opt-in tag.
@@ -19,7 +19,7 @@
 composer update sandermuller/package-boost-laravel --with-dependencies
 ```
 
-If your project pins `sandermuller/package-boost-php` or `sandermuller/boost-core` directly, bump those constraints too: `^0.10.2` and `^0.9.6` respectively.
+If your project pins `sandermuller/package-boost-php` or `sandermuller/boost-core` directly, bump those constraints too: `^0.12` and `^0.10` respectively.
 
 ### 2. Allowlist `sandermuller/boost-skills` and opt into `release-automation`
 

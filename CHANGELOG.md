@@ -5,6 +5,32 @@ All notable changes to `sandermuller/package-boost-laravel` will be documented h
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.7.3...HEAD)
+
+Adopts the `boost-core` 0.9 line via `package-boost-php` 0.10.1's widened constraint, plus the README rewrite and `package-boost-php` `^0.10` adoption that had been sitting on `main`.
+
+### Breaking — constraint floors raised
+
+- **`sandermuller/boost-core: ^0.7` → `^0.8 \|\| ^0.9`.** Resolves to [boost-core 0.9.x](https://github.com/SanderMuller/boost-core/releases/tag/0.9.0) when paired with a current resolver. 0.9.0 moves the Project Conventions edit surface from CLAUDE.md's marker-bounded YAML body to `boost.php`'s `->withConventions([...])` chain — `boost.php` is the source of truth, CLAUDE.md is a rendered audit trail. This package authors no conventions, so the default `[]` applies and no migration command is required. Use the widened-OR pattern so consumers with a pinned `^0.8` lockfile keep resolving.
+- **`sandermuller/package-boost-php: ^0.9` → `^0.10.1`.** Pulls in [package-boost-php 0.10.1](https://github.com/SanderMuller/package-boost-php/releases/tag/0.10.1) (the constraint-widener for boost-core). The 0.10.0 → 0.10.1 cycle also released 0.10.2, which absorbs the boost-core 0.9.1 → 0.9.4 patch ladder. The skill migration introduced in `package-boost-php` 0.10.0 still applies: `readme`, `release-notes`, `upgrading` ship from `sandermuller/boost-skills` 1.6.0+ under the `release-automation` opt-in tag.
+
+Pre-1.0 Composer semver collapses minor and patch into "potentially breaking" — floor narrowing for downstreams is treated as breaking here in spirit, even though the next version number will be a minor bump.
+
+### Changed
+
+- **`AGENTS.md` and `CLAUDE.md` are now tracked.** boost-core 0.8.3 + 0.9.1 dropped them from the boost-managed `.gitignore` block. Both files have marker-bounded regions for rendered guideline content; operator-authored content (outside the markers) survives `boost sync` round-trips. Files are still `export-ignore`'d, so they do not bloat the Composer archive.
+- **`.github/copilot-instructions.md` retired.** GitHub Copilot now reads root `AGENTS.md` per the [GitHub Changelog 2025-08-28](https://github.blog/changelog/2025-08-28-copilot-coding-agent-now-supports-agents-md-custom-instructions/); boost-core 0.9.x stops emitting the Copilot-specific file. The boost-managed `.gitignore` block dropped its entry; `boost sync` removes any stale copy.
+- **`.github/skills/` retired.** boost-core 0.9.1 routes Copilot skills to the shared `.agents/skills/` + `AGENTS.md` surface (per the [GitHub Changelog 2025-12-18 for agent skills](https://github.blog/changelog/)); `.github/skills/` is no longer an emitted target and was dropped from the `.gitignore` block.
+- **README rewritten** end-to-end against the sandermuller boost-family README strategy (29 → 110 lines, in the 80-120 toolkit-package target). Adds the Laravel Boost compatibility badge, the canonical "Which package fits your role?" routing table, and a `McpJsonEmitter`-led "What you get" section. Three-bullet Coexistence-and-inheritance section frames the three relationships this package sits inside (inherits from `package-boost-php`, coexists with `laravel/boost` in the test app, serves Laravel-package projects).
+- **Dogfood `boost.php` hygiene.** Added `Tag::Laravel` and `Tag::Pest` alongside the existing `Tag::Php` and `Tag::Github` to source the Laravel- and Pest-tagged skills from `sandermuller/boost-skills`. Stripped the no-op `->withDisabledEmitters([])` chain.
+
+### Consumer impact
+
+- **`McpJsonEmitter` + service provider** — untouched. The emitter still gates on `laravel/boost` + `orchestra/testbench` + `Agent::CLAUDE_CODE`.
+- **`resources/boost/skills/` + `resources/boost/guidelines/laravel-packages.md`** — untouched.
+- **Auto-syncs through `BoostAutoSync::run`** — untouched.
+- **Action required** when bumping past `0.7.3`: widen your `package-boost-laravel` constraint, and update your project's `.gitignore` boost-managed block via `boost sync` so `AGENTS.md` / `CLAUDE.md` / `.github/copilot-instructions.md` / `.github/skills/` switch tracking state per 0.9.x. If you author Project Conventions, run `vendor/bin/boost convert-conventions` once to migrate your CLAUDE.md YAML body into `boost.php->withConventions([...])`. See [UPGRADING.md](UPGRADING.md) for the full migration story.
+
 ## [0.7.3](https://github.com/sandermuller/package-boost-laravel/compare/0.7.2...0.7.3) - 2026-05-25
 
 ### Changed

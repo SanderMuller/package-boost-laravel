@@ -88,10 +88,16 @@ Highest drift-risk: the 3 skills + 1 guideline ship to consumers and may describ
 
 ---
 
-<!-- ## Resolved Questions
-1. **{Original question?}** **Decision:** {What was decided.} **Rationale:** {Why.}
--->
+## Resolved Questions
+
+1. **Release shape for the cycle's output.** **Decision:** patch — `0.11.1`. **Rationale:** the cycle changed shipped skills (consumer-facing content) + `.gitattributes` dist hygiene; no `public` symbol changed, so a patch is correct pre-1.0.
+2. **Arch-test adoption (Phase 4).** **Decision:** do not add. **Rationale:** `pest-plugin-arch`'s `arch()->expect()` chain returns a `TestCall` the Pest/PHPStan extension doesn't type, so it fails `phpstan analyse` ("undefined method ...TestCall::expect()"). Keeping it would require a phpstan exclusion (CLAUDE.md forbids suppressions without approval) — not worth it for a 3-class surface where `final` is already enforced on every class and the gate behavior is fully unit-tested. Reverted before commit.
+3. **boost-core-symbols-without-direct-require posture (Phase 3).** **Decision:** leave as-is (umbrella requires only `package-boost-php`; boost-core symbols used in `AutoSync` + `McpJsonEmitter` resolve transitively). **Rationale:** Sander's 0.11.0 decision; documented in UPGRADING 0.11.0 + the 0.11.0 release notes + the `maintenance-cycle-cadence` / 0.11.0 commit. boost-core is guaranteed present because package-boost-php requires it. No composer-level guard exists or is warranted; adding a `src` comment about a dependency choice would be misplaced.
 
 ## Findings
 
-<!-- Notes added during implementation. Do not remove this section. -->
+- **Phase 1 (recent-changes + dist hygiene):** Cumulative `0.7.3..HEAD` is coherent — no orphaned `BoostAutoSync` refs (the only refs are `AutoSync`'s intended delegate), `composer.json` consistent (require = `package-boost-php ^0.16.1`; tags + scripts + `composer/composer` dev-dep aligned), no stale doc constraints (the `UPGRADING.md` boost-core mentions are correct *historical* migration records). **Fix applied + shipped:** `specs/ export-ignore` added to `.gitattributes` (project section); `git archive` confirms `specs/` excluded from dist (only `src/` ships). **Coordination note (open):** repo-init's canonical laravel-package `.gitattributes` stub also omits `specs/` — likely a family scaffold gap to flag to `dc8fud3l`.
+- **Phase 2 (shipped-assets freshness):** Façade/markerless stale-wiring suspicion **refuted** — no `BoostAutoSync`/marker/scaffold-wiring tokens in shipped assets (only the guideline's correct artisan-substitution table). **Real finding fixed:** `cross-version-laravel-support.md` + `ci-matrix-troubleshooting.md` + `package-development.md` recommended PHP `^8.2` / Laravel `^11.0||^12.0||^13.0` examples predating the family's 0.3.0 drop of Laravel 11 + PHP 8.2 (laravel/pao floors at 8.3) — modernized to PHP `^8.3` / Laravel `^12.0||^13.0` while keeping the general technique. Guideline `laravel-packages.md` already current. `boost sync` idempotent post-edit.
+- **Phase 3 (architecture & API):** Clean — all 3 classes `final`; `McpJsonEmitter` gate logic idiomatic (no simplification); `ServiceProvider` `#[Override]` usage correct (base declares `register()`, not `boot()`). LOW/cosmetic: `McpJsonEmitter` opens with multi-line `<?php`/`declare` vs single-line elsewhere — Pint-neutral, left as-is. No code change.
+- **Phase 4 (test strategy):** `McpJsonEmitterTest` already covers success + all 3 gate-fail paths + JSON validity — no backfill needed. `AutoSyncTest` delegation coverage sufficient (skip-env case documented-as-omitted per the putenv ruleset). Arch test attempted + reverted (see Resolved Q2).
+- **Net output:** Phase 1 dist-hygiene fix + Phase 2 skill modernization (both committed); Phases 3-4 clean reviews, no code change. Ships as **0.11.1** (patch).

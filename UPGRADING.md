@@ -1,5 +1,47 @@
 # Upgrading
 
+## From 0.8.x to 0.9.0
+
+`0.9.0` raises the `sandermuller/boost-core` floor `^0.10` → `^0.13` and the `sandermuller/package-boost-php` floor `^0.12` → `^0.15`. The two move as a joined pair: package-boost-php 0.15.0 requires boost-core `^0.13`, so adopting one pulls the other. This package authors no conventions and ships no wrapper, so the upstream changes are constraint-and-sync only — no code or API change here.
+
+Three upstream behavioural changes land in this window:
+
+1. **boost-core 0.12.0 — markerless agent-guidance files.** `CLAUDE.md` / `AGENTS.md` / `GEMINI.md` are now wholesale boost-owned and regenerated in full each sync, with no `<!-- boost-core:guidelines -->` markers. An empty-assembly guard never blanks a non-empty guidance file. On the first sync, marker comments are stripped and any content outside them is preserved once below the generated body. Put operator-authored guidance in `.ai/guidelines/`, not in the emission target.
+2. **boost-core 0.13.0 — sync-ownership manifest.** A gitignored `.boost/manifest.json` records every emitted path with sha256 + category + provenance. boost-core's managed `.gitignore` block gains `.boost/` on the first 0.13 sync. No action beyond staging the `.gitignore` change.
+3. **package-boost-php 0.13 → 0.15** widened then floor-bumped its boost-core constraint (`^0.10||^0.11` → `^0.12` → `^0.13`); the net effect for you is the `^0.15` floor above. No package-boost-php code or skill change.
+
+### 1. Bump the constraint
+
+```diff
+- "sandermuller/package-boost-laravel": "^0.8"
++ "sandermuller/package-boost-laravel": "^0.9"
+```
+
+```bash
+composer update sandermuller/package-boost-laravel --with-all-dependencies
+```
+
+If your project pins `sandermuller/package-boost-php` or `sandermuller/boost-core` directly, bump those to `^0.15` and `^0.13` respectively.
+
+### 2. Re-sync and stage the managed-block change
+
+```bash
+vendor/bin/boost sync
+git add AGENTS.md CLAUDE.md .gitignore
+```
+
+The first 0.12 sync strips guideline markers from `AGENTS.md` / `CLAUDE.md` (content preserved); the first 0.13 sync adds `.boost/` to the managed `.gitignore` block. Both are idempotent after the initial settle.
+
+### 3. Opt into `boost-extension` only if you author a `FileEmitter`
+
+If your package ships a custom `FileEmitter`, add `'boost-extension'` to `boost.php`'s `withTags([...])` to pull the `writing-file-emitter` + `skill-authoring` skills (gated off by default). Consumers that don't extend the engine skip this.
+
+### Nothing else changed
+
+- `McpJsonEmitter` activation conditions — unchanged.
+- `resources/boost/skills/` + `resources/boost/guidelines/laravel-packages.md` — unchanged.
+- Service provider registration + `BoostAutoSync::run` wiring — unchanged.
+
 ## From 0.7.x to 0.8.0
 
 `0.8.0` raises the `sandermuller/boost-core` floor to `^0.10` and the `sandermuller/package-boost-php` floor to `^0.12`. The 0.10 line inherits 0.9.6's path-ownership cleanup that removes the retired `.github/copilot-instructions.md` on `boost sync` (see step 4) and adds the wrong-entry-point ergonomics cycle (doctor banner + three-case diagnostic split, gated on `project-boost-laravel` presence — does not fire for package-author projects). Three behavioural changes consumers need to know about live upstream:

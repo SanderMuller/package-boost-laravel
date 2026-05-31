@@ -5,7 +5,38 @@ All notable changes to `sandermuller/package-boost-laravel` will be documented h
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.9.1...HEAD)
+## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.10.0...HEAD)
+
+## [0.10.0](https://github.com/sandermuller/package-boost-laravel/compare/0.9.1...0.10.0) - 2026-05-31
+
+<!-- verified-sha: 75b91bd341c67a1238fedc51201fa75f4ed9f6d8 -->
+One-package install, and the boost-core line opens to `^0.15`. A Laravel-package author now requires only `sandermuller/package-boost-laravel` and never names a `sandermuller/boost-core` symbol in their own `composer.json` — boost-core stays a transitive dependency, resolved through this umbrella.
+
+### What's changed
+
+#### Added
+
+- **`SanderMuller\PackageBoostLaravel\Scripts\AutoSync`** — a thin Composer-script façade over boost-core's `BoostAutoSync`. Two static delegates, `run()` and `runWithSummary()`, each total-delegating to the boost-core equivalent (no logic of its own), so every guard — skip on `--no-dev`, skip on `BOOST_SKIP_AUTOSYNC`, skip when the `boost` binary is absent, warn-not-throw on failure — fires unchanged through the delegate. Wire `post-install-cmd` / `post-update-cmd` at this class instead of boost-core's. Two payoffs: a consumer's `composer.json` carries no boost-core symbol (one-package install), and the façade is an insulation seam — a future boost-core callback shift is absorbed here once, not in every consumer (boost-core's semver commitment keeps `run` / `runWithSummary` stable delegation targets).
+
+#### Changed
+
+- README install guidance is now explicit one-package: `sandermuller/boost-core` and `sandermuller/package-boost-php` (and through the latter, `stolt/lean-package-validator`) come in transitively — do not require any of them separately.
+- This package's own `post-install-cmd` / `post-update-cmd` now reference the `AutoSync` façade instead of `BoostCore\Scripts\BoostAutoSync` (dogfood).
+- Widened the `sandermuller/boost-core` constraint `^0.13 || ^0.14` → `^0.13 || ^0.14 || ^0.15`, opening boost-core 0.15.0 (the conventions-inlining engine — a no-op here, since this package declares no conventions) without dropping the lower floors. `sandermuller/package-boost-php` stays `^0.15`; its 0.15.2 widen already accepts boost-core `^0.15`, so the umbrella's transitive resolution is clear.
+
+#### Internal
+
+- Added `composer/composer ^2.7` to `require-dev` so `Composer\Script\Event` resolves for static analysis and the façade test. Dev-only — not inherited by consumers.
+- Added a test that proves the façade delegates: a non-dev `Event` reaches `isDevMode()` through the delegate and the `--no-dev` guard short-circuits before any sync is spawned.
+
+### Consumer impact
+
+- **Additive, non-breaking.** `AutoSync` is new public API; nothing was removed or renamed.
+- `McpJsonEmitter` + service provider — untouched. Still gates on `laravel/boost` + `orchestra/testbench` + `Agent::CLAUDE_CODE`.
+- `resources/boost/skills/` + `resources/boost/guidelines/laravel-packages.md` — untouched.
+- Existing consumers keep working as-is. To adopt the one-package wiring, point your `post-install-cmd` / `post-update-cmd` at `SanderMuller\PackageBoostLaravel\Scripts\AutoSync::run`. New scaffolds will pick this up through a forthcoming repo-init template update (swapped atomically with a require-floor bump so a fresh scaffold never references a class its resolved version lacks).
+
+**Full Changelog:** https://github.com/SanderMuller/package-boost-laravel/compare/0.9.1...0.10.0
 
 ## [0.9.1](https://github.com/sandermuller/package-boost-laravel/compare/0.9.0...0.9.1) - 2026-05-31
 
@@ -165,6 +196,7 @@ Pre-0.7.0, installing `package-boost-laravel` (which pulled `boost-core` as a Co
 
 
 
+
 ```
 A dependency's own `post-install-cmd` does not fire in a consuming project — only the root package's scripts run — so this must live in *your* `composer.json`. Otherwise, run `vendor/bin/boost sync` yourself (e.g. in CI). `BOOST_SKIP_AUTOSYNC=1` still disables the callback.
 
@@ -184,6 +216,7 @@ See [`boost-core`'s 0.5 → 0.6 UPGRADING](https://github.com/sandermuller/boost
 
 ```bash
 composer update sandermuller/package-boost-laravel --with-all-dependencies
+
 
 
 
@@ -255,6 +288,7 @@ Tracks the `boost-core` 0.4.0 family release. `package-boost-laravel`'s own surf
 
 
 
+
 ```
 The slug now carries the full Composer `vendor/package` name with the slash rewritten to `__` — a sequence the Composer name spec forbids, so the mapping is collision-free across vendors. A one-time auto-migration with an ownership check relocates existing user-scope skill directories on the next sync; no manual action required.
 
@@ -271,6 +305,7 @@ Both constraints move together — `package-boost-php` 0.4.0 is the floor and it
 
 ```bash
 composer update sandermuller/package-boost-laravel
+
 
 
 
@@ -321,6 +356,7 @@ Laravel 11 is intentionally not supported — `laravel/pao` (an essential dev-ou
 
 ```bash
 composer require --dev sandermuller/package-boost-laravel
+
 
 
 

@@ -7,7 +7,7 @@ description: Debug "fails on prefer-lowest" or "fails on Laravel 13 but not 12" 
 
 ## When to apply
 
-- A specific cell of the CI matrix is failing (`php=8.2, laravel=11, stability=prefer-lowest`)
+- A specific cell of the CI matrix is failing (`php=8.3, laravel=12, stability=prefer-lowest`)
 - Asked to "fix the resolve-lowest job"
 - Asked to "find the floor of dep X"
 
@@ -29,9 +29,9 @@ Typical culprits:
 
 ## Fix patterns
 
-**Bump a floor.** If `phpunit/phpunit: ^9.0` resolves to 9.0.0 which
-needs PHP 7.3 (and your CI is on PHP 8.2), prefer-lowest hits PHP edge
-cases. Bump to `^9.5` or `^10.0`.
+**Bump a floor.** If `phpunit/phpunit: ^10.0` resolves to a build that
+needs an older PHP than your CI floor (8.3), prefer-lowest hits PHP edge
+cases. Bump the floor to the version that matches your PHP support.
 
 **Add a conflict.** When you know an old version is broken with your
 code:
@@ -46,25 +46,29 @@ code:
 
 Better than a higher floor when the floor was correct for most consumers.
 
-**Exclude a cell.** When a combination genuinely can't work (e.g.
-Laravel 13 requires PHP 8.3+, you support PHP 8.2 with Laravel 11/12):
+**Exclude a cell.** When a combination genuinely can't work — e.g. a
+future Laravel major floors at a higher PHP than a row you still
+support:
 
 ```yaml
 exclude:
-  - php: '8.2'
-    laravel: '13.*'
+  - php: '8.3'
+    laravel: '14.*'   # if a future Laravel 14 floors at PHP 8.4
 ```
+
+At the current PHP 8.3 floor with Laravel 12+13 no exclude is needed —
+both run on 8.3+.
 
 ## Cell-specific failures
 
 **"Works on `prefer-stable`, fails on `prefer-lowest`":** a transitive
 dep's floor is too low. Bump the direct dep's floor.
 
-**"Works on Laravel 11, fails on Laravel 12":** a Laravel API changed.
+**"Works on Laravel 12, fails on Laravel 13":** a Laravel API changed.
 Check `illuminate/*` upgrade guides for the breaking change, add
 version-conditional code or bump your floor.
 
-**"Works on PHP 8.2, fails on 8.4":** likely a deprecation that became
+**"Works on PHP 8.3, fails on 8.4":** likely a deprecation that became
 an error. Run the failing PHP version locally with `error_reporting(-1)`.
 
 ## Anti-patterns

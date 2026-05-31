@@ -8,24 +8,28 @@ description: Support multiple Laravel major versions in a single package release
 ## When to apply
 
 - Authoring a Laravel package's composer.json `require` for `illuminate/*`
-- Asked to "support Laravel 11 and 12"
+- Asked to "support Laravel 12 and 13"
 - Reviewing a PR that bumps or constrains the Laravel range
 
 ## Constraint pattern
 
-For new packages defaulting to the current+next majors:
+For new packages defaulting to the current+next majors (the canonical
+sander floor — PHP 8.3+, Laravel 12+13; PHP 8.2 and Laravel 11 are
+dropped because `laravel/pao` floors at PHP 8.3):
 
 ```json
 {
     "require": {
-        "php": "^8.2",
-        "illuminate/contracts": "^11.0||^12.0||^13.0",
-        "illuminate/support": "^11.0||^12.0||^13.0"
+        "php": "^8.3",
+        "illuminate/contracts": "^12.0||^13.0",
+        "illuminate/support": "^12.0||^13.0"
     }
 }
 ```
 
 Use `||` (not `,`) between major version ranges — `,` is AND, `||` is OR.
+The same `||` technique extends to a third major if you need a wider
+span; the floor above is just the current canonical default.
 
 ## Minimal illuminate footprint
 
@@ -43,25 +47,26 @@ Smaller surface = fewer breaking changes across Laravel majors.
 
 ## Test matrix
 
-GitHub Actions matrix for `^11||^12||^13`:
+GitHub Actions matrix for `^12||^13`:
 
 ```yaml
 strategy:
   matrix:
-    php: ['8.2', '8.3', '8.4']
-    laravel: ['11.*', '12.*', '13.*']
+    php: ['8.3', '8.4']
+    laravel: ['12.*', '13.*']
     stability: ['prefer-lowest', 'prefer-stable']
-    exclude:
-      - php: '8.2'
-        laravel: '13.*'   # Laravel 13 requires PHP 8.3+
 ```
+
+No `exclude` is needed at the PHP 8.3 floor — both Laravel 12 and 13
+run on 8.3+. Add an `exclude` only when a future major raises the PHP
+floor above a row you still support.
 
 `prefer-lowest` catches "works in dev, breaks for the user who pinned an
 old version". `prefer-stable` catches the upgrade path.
 
 ## Anti-patterns
 
-- `^11.0` instead of `^11.0||^12.0`: lock yourself into one major forever
+- `^12.0` instead of `^12.0||^13.0`: lock yourself into one major forever
 - Hard `composer require laravel/framework`: pulls in the entire
   framework as a transitive dep
 - Skipping `prefer-lowest` in CI: ships breakage to old-version users

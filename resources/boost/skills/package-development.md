@@ -73,5 +73,5 @@ One per package, named `{PackageStudly}ServiceProvider`. Lives at
 
 ## See also
 
-- `cross-version-laravel-support` skill for `^11.0||^12.0||^13.0` patterns
+- `cross-version-laravel-support` skill for `^12.0||^13.0` patterns
 - `ci-matrix-troubleshooting` skill for resolve-stability test matrix

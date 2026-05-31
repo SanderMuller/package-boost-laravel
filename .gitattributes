@@ -25,3 +25,4 @@ tests/ export-ignore
 workbench/ export-ignore
 # <<< package-boost (managed) <<<
 /CHANGELOG.md export-ignore
+specs/ export-ignore

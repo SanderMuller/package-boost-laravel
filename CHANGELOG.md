@@ -5,7 +5,35 @@ All notable changes to `sandermuller/package-boost-laravel` will be documented h
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.9.0...HEAD)
+## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.9.1...HEAD)
+
+## [0.9.1](https://github.com/sandermuller/package-boost-laravel/compare/0.9.0...0.9.1) - 2026-05-31
+
+<!-- verified-sha: f1f7ba8a1c3f1b1d6b4b863433663a4648d27b29 -->
+Non-breaking widen: opens `sandermuller/boost-core` 0.14.0 without dropping the 0.13 floor.
+
+### What's changed
+
+#### Changed
+
+- Widened the `sandermuller/boost-core` constraint `^0.13` → `^0.13 || ^0.14`. Gentle absorption — `0.13` stays a valid floor for downstreams while `0.14` becomes available. `sandermuller/package-boost-php` stays `^0.15`; its own 0.15.1 widen (`boost-core ^0.13 || ^0.14`) means the umbrella's transitive resolution no longer caps boost-core below 0.14.
+
+boost-core 0.14.0 brings, relevant to this package's `McpJsonEmitter`:
+
+- **Emitter-dormancy reap.** When `laravel/boost` is dropped and `McpJsonEmitter` returns null (dormant), boost-core now reaps the previously-emitted `.mcp.json` instead of leaving stale config pointing at a missing `vendor/bin/testbench boost:mcp`. The reap is sha-gated — a hand-edited `.mcp.json` is preserved, not deleted — and ownership is recorded only for files boost created fresh or already owned (no take-over of pre-existing operator content). This closes a stale-file gap surfaced through real adoption feedback.
+- Agent-deselection orphan reap and `.gitignore` directory/per-file dedup also land in 0.14.0; neither requires action here.
+
+#### Internal
+
+- No code or API change. `McpJsonEmitter`'s durable contract is unchanged: it returns null (never throws) when its gate is unmet, only ever writes its managed `.mcp.json` path, and a disabled or errored emitter leaves existing output untouched. Returning null on a dropped `laravel/boost` is precisely the dormancy signal that now drives the reap.
+
+### Consumer impact
+
+- `McpJsonEmitter` + service provider — untouched. Still gates on `laravel/boost` + `orchestra/testbench` + `Agent::CLAUDE_CODE`.
+- `resources/boost/skills/` + `resources/boost/guidelines/laravel-packages.md` — untouched.
+- Action required: none for a patch widen. To pull boost-core 0.14.0's reap behavior into your own tree, run `composer update sandermuller/boost-core` once on `^0.14`.
+
+**Full Changelog:** https://github.com/SanderMuller/package-boost-laravel/compare/0.9.0...0.9.1
 
 ## [0.9.0](https://github.com/sandermuller/package-boost-laravel/compare/0.8.0...0.9.0) - 2026-05-31
 
@@ -136,6 +164,7 @@ Pre-0.7.0, installing `package-boost-laravel` (which pulled `boost-core` as a Co
 
 
 
+
 ```
 A dependency's own `post-install-cmd` does not fire in a consuming project — only the root package's scripts run — so this must live in *your* `composer.json`. Otherwise, run `vendor/bin/boost sync` yourself (e.g. in CI). `BOOST_SKIP_AUTOSYNC=1` still disables the callback.
 
@@ -155,6 +184,7 @@ See [`boost-core`'s 0.5 → 0.6 UPGRADING](https://github.com/sandermuller/boost
 
 ```bash
 composer update sandermuller/package-boost-laravel --with-all-dependencies
+
 
 
 
@@ -224,6 +254,7 @@ Tracks the `boost-core` 0.4.0 family release. `package-boost-laravel`'s own surf
 
 
 
+
 ```
 The slug now carries the full Composer `vendor/package` name with the slash rewritten to `__` — a sequence the Composer name spec forbids, so the mapping is collision-free across vendors. A one-time auto-migration with an ownership check relocates existing user-scope skill directories on the next sync; no manual action required.
 
@@ -240,6 +271,7 @@ Both constraints move together — `package-boost-php` 0.4.0 is the floor and it
 
 ```bash
 composer update sandermuller/package-boost-laravel
+
 
 
 
@@ -289,6 +321,7 @@ Laravel 11 is intentionally not supported — `laravel/pao` (an essential dev-ou
 
 ```bash
 composer require --dev sandermuller/package-boost-laravel
+
 
 
 

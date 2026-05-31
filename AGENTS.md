@@ -211,6 +211,16 @@ behaviour is pinned down.
 - Do not add dependencies without approval; every new `require` is a
   constraint downstream consumers inherit.
 
+## Extending boost-core
+
+If your package authors a custom `FileEmitter` (to write a file like
+`.mcp.json` into the host during `boost sync`), declare the
+`boost-extension` tag in your `boost.php` `withTags([...])`. That pulls
+the `writing-file-emitter` skill — gated off by default so consumers
+who do not extend the engine don't carry it, which is why an
+emitter-authoring package has to opt in explicitly. The same tag pulls
+`skill-authoring` for writing boost-family skills.
+
 ## Documentation Files
 
 Only create or edit documentation (README, CHANGELOG, docs/) when

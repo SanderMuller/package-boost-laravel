@@ -38,7 +38,7 @@ AI agent skills, guidelines, and `.mcp.json` emission for Laravel-package author
 |--------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----|
 | `laravel-packages` | Detection rule (`require.illuminate/*` or `require.laravel/framework`), Testbench context, artisan-substitution table, cross-version compatibility pointer. Composes with the framework-agnostic `foundation` guideline inherited from `package-boost-php`. | —   |
 
-Inherits everything `package-boost-php` ships — `foundation` guideline, `lean` / `gitattributes` CLI commands, `lean-dist` + `skill-authoring` + `writing-file-emitter` skills, and the release-flow content skills (`readme`, `release-notes`, `upgrading`) from `sandermuller/boost-skills` under the `release-automation` tag.
+Inherits everything `package-boost-php` ships — `foundation` guideline, `lean` / `gitattributes` CLI commands, the `lean-dist` skill, and the release-flow content skills (`readme`, `release-notes`, `upgrading`) from `sandermuller/boost-skills` under the `release-automation` tag. The `skill-authoring` + `writing-file-emitter` skills ship too but are gated behind the `boost-extension` tag — declare it if your package extends the engine with a custom `FileEmitter` (this package does, for `McpJsonEmitter`).
 
 ## Install
 
@@ -76,7 +76,7 @@ return BoostConfig::configure()
     ->withTags(Tag::Php, Tag::Laravel, Tag::Github, 'release-automation');
 ```
 
-The `release-automation` tag pulls the release-flow skills from `sandermuller/boost-skills`. Full `BoostConfig` reference lives in [`sandermuller/boost-core`'s README](https://github.com/sandermuller/boost-core#readme).
+The `release-automation` tag pulls the release-flow skills from `sandermuller/boost-skills`; add `'boost-extension'` to pull `skill-authoring` + `writing-file-emitter` if you author a custom `FileEmitter`. Full `BoostConfig` reference lives in [`sandermuller/boost-core`'s README](https://github.com/sandermuller/boost-core#readme).
 
 ## Coexistence and inheritance
 

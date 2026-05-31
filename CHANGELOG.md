@@ -5,7 +5,32 @@ All notable changes to `sandermuller/package-boost-laravel` will be documented h
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.11.0...HEAD)
+## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.11.1...HEAD)
+
+## [0.11.1](https://github.com/sandermuller/package-boost-laravel/compare/0.11.0...0.11.1) - 2026-05-31
+
+<!-- verified-sha: 02ddf275ee55ab9bc5c6b7f133782b9c62532df0 -->
+Maintenance cycle: modernized the shipped cross-version skills and tightened dist hygiene. No code or API change.
+
+### What's changed
+
+#### Changed
+
+- **Modernized cross-version guidance to the canonical sander floor (PHP 8.3+, Laravel 12+13).** `cross-version-laravel-support` and `ci-matrix-troubleshooting` recommended PHP `^8.2` + Laravel `^11.0||^12.0||^13.0` examples that predated the family's drop of Laravel 11 + PHP 8.2 (laravel/pao floors at PHP 8.3) — they steered consumers toward the exact pao conflict the canonical setup avoids. Updated both (and `package-development`'s cross-reference) to PHP `^8.3` / Laravel `^12.0||^13.0` and a 12/13 × 8.3/8.4 matrix, keeping the general cross-version technique intact.
+
+#### Fixed
+
+- **Dist hygiene: `specs/` is now `export-ignore`d.** The package's internal spec directory was tracked but not excluded from the published Composer archive; added `specs/ export-ignore` so maintenance specs never ship to consumers. Verified via `git archive` (only `src/` ships).
+
+### Consumer impact
+
+- **No code or API change.** `McpJsonEmitter`, the `AutoSync` façade, the service provider, and `composer.json` constraints are untouched.
+- The skill updates reach consumers on their next `boost sync` once they adopt this version; the guidance now matches the canonical PHP 8.3 / Laravel 12+13 floor.
+- Action required: none.
+
+This release is the output of a periodic code-maintenance cycle (recent-changes review, architecture review, test-strategy audit, shipped-asset freshness) — most areas reviewed clean; the two items above were the warranted fixes.
+
+**Full Changelog:** https://github.com/SanderMuller/package-boost-laravel/compare/0.11.0...0.11.1
 
 ## [0.11.0](https://github.com/sandermuller/package-boost-laravel/compare/0.10.1...0.11.0) - 2026-05-31
 
@@ -241,6 +266,7 @@ Pre-0.7.0, installing `package-boost-laravel` (which pulled `boost-core` as a Co
 
 
 
+
 ```
 A dependency's own `post-install-cmd` does not fire in a consuming project — only the root package's scripts run — so this must live in *your* `composer.json`. Otherwise, run `vendor/bin/boost sync` yourself (e.g. in CI). `BOOST_SKIP_AUTOSYNC=1` still disables the callback.
 
@@ -260,6 +286,7 @@ See [`boost-core`'s 0.5 → 0.6 UPGRADING](https://github.com/sandermuller/boost
 
 ```bash
 composer update sandermuller/package-boost-laravel --with-all-dependencies
+
 
 
 
@@ -337,6 +364,7 @@ Tracks the `boost-core` 0.4.0 family release. `package-boost-laravel`'s own surf
 
 
 
+
 ```
 The slug now carries the full Composer `vendor/package` name with the slash rewritten to `__` — a sequence the Composer name spec forbids, so the mapping is collision-free across vendors. A one-time auto-migration with an ownership check relocates existing user-scope skill directories on the next sync; no manual action required.
 
@@ -353,6 +381,7 @@ Both constraints move together — `package-boost-php` 0.4.0 is the floor and it
 
 ```bash
 composer update sandermuller/package-boost-laravel
+
 
 
 
@@ -406,6 +435,7 @@ Laravel 11 is intentionally not supported — `laravel/pao` (an essential dev-ou
 
 ```bash
 composer require --dev sandermuller/package-boost-laravel
+
 
 
 

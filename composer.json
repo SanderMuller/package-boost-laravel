@@ -29,6 +29,7 @@
         "sandermuller/package-boost-php": "^0.15"
     },
     "require-dev": {
+        "composer/composer": "^2.7",
         "driftingly/rector-laravel": "^2.3",
         "larastan/larastan": "^3.9",
         "laravel/boost": "^2.0||^3.0",
@@ -89,10 +90,10 @@
             "@php vendor/bin/testbench serve --ansi"
         ],
         "post-install-cmd": [
-            "SanderMuller\\BoostCore\\Scripts\\BoostAutoSync::run"
+            "SanderMuller\\PackageBoostLaravel\\Scripts\\AutoSync::run"
         ],
         "post-update-cmd": [
-            "SanderMuller\\BoostCore\\Scripts\\BoostAutoSync::run"
+            "SanderMuller\\PackageBoostLaravel\\Scripts\\AutoSync::run"
         ],
         "test": "vendor/bin/pest",
         "test-coverage": "vendor/bin/pest --coverage",

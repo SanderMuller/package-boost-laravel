@@ -46,7 +46,7 @@ Inherits everything `package-boost-php` ships — `foundation` guideline, `lean`
 composer require --dev sandermuller/package-boost-laravel
 ```
 
-PHP 8.3+ and Laravel 12 or 13. `sandermuller/boost-core` and `sandermuller/package-boost-php` (and through the latter, `stolt/lean-package-validator`) come in transitively — do **not** require any of them separately, they resolve through this umbrella. A Laravel-package author requires only `sandermuller/package-boost-laravel` and gets the whole stack.
+PHP 8.3+ and Laravel 12 or 13. `sandermuller/package-boost-php` (and through it, `sandermuller/boost-core` + `stolt/lean-package-validator`) comes in transitively — do **not** require any of them separately, they resolve through this umbrella. A Laravel-package author requires only `sandermuller/package-boost-laravel` and gets the whole stack.
 
 ## First run
 

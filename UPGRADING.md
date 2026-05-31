@@ -1,5 +1,31 @@
 # Upgrading
 
+## From 0.10.x to 0.11.0
+
+`0.11.0` floor-bumps `sandermuller/package-boost-php` `^0.15 || ^0.16` → `^0.16.1` and **drops the umbrella's direct `sandermuller/boost-core` require**. boost-core is now inherited purely transitively through `package-boost-php`, so the umbrella auto-tracks package-boost-php's boost-core range (`^0.13 || ^0.14 || ^0.15 || ^0.16` as of 0.16.1) instead of restating it — adopting a new boost-core line no longer needs an umbrella constraint bump, only a package-boost-php floor move when warranted.
+
+This adds **boost-core 0.16 support**: package-boost-php 0.16.1 widened to accept `^0.16`, so the umbrella now resolves boost-core 0.16.0 (conventions-token leak detection — a no-op for packages that declare no conventions). No code or API change in this package; `McpJsonEmitter`, the `AutoSync` façade, and all shipped skills/guidelines are untouched.
+
+### 1. Bump the constraint
+
+```diff
+- "sandermuller/package-boost-laravel": "^0.10"
++ "sandermuller/package-boost-laravel": "^0.11"
+```
+
+```bash
+composer update sandermuller/package-boost-laravel --with-all-dependencies
+```
+
+### 2. If you pin the lower packages directly
+
+You do not need to — the umbrella resolves the whole stack. But if your project pins `sandermuller/package-boost-php` directly, bump it to `^0.16.1`. You no longer need a direct `sandermuller/boost-core` pin at all; if you keep one, `^0.13 || ^0.14 || ^0.15 || ^0.16` matches package-boost-php's range.
+
+### Nothing else changed
+
+- `McpJsonEmitter` activation conditions, the `AutoSync` façade callback, and the `post-install-cmd` / `post-update-cmd` wiring — unchanged.
+- `resources/boost/skills/` + `resources/boost/guidelines/laravel-packages.md` — unchanged.
+
 ## From 0.8.x to 0.9.0
 
 `0.9.0` raises the `sandermuller/boost-core` floor `^0.10` → `^0.13` and the `sandermuller/package-boost-php` floor `^0.12` → `^0.15`. The two move as a joined pair: package-boost-php 0.15.0 requires boost-core `^0.13`, so adopting one pulls the other. This package authors no conventions and ships no wrapper, so the upstream changes are constraint-and-sync only — no code or API change here.

@@ -32,4 +32,5 @@ return BoostConfig::configure()
         Tag::Github,
         Tag::Pest,
         'release-automation',
+        'boost-extension',
     );

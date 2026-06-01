@@ -8,6 +8,8 @@
 
 AI agent skills, guidelines, and `.mcp.json` emission for Laravel-package authors. Inherits the framework-agnostic package-author toolkit from [`sandermuller/package-boost-php`](https://github.com/sandermuller/package-boost-php) and layers on Laravel-specific context: Testbench conventions, cross-version Laravel support, CI matrix diagnostics, and the `McpJsonEmitter` that wires `laravel/boost`'s MCP server into Claude Code during `boost sync`.
 
+![overview image](overview.png)
+
 > Where [`laravel/boost`](https://github.com/laravel/boost) targets Laravel **application** developers, `package-boost-laravel` targets the people building Laravel **packages** — the dev-time codebase where `app/`, `bootstrap/`, and `.env` don't exist and `php artisan` doesn't apply. Coexists cleanly with `laravel/boost` if you also dogfood it from inside your package's test app.
 
 ## Which package fits your role?

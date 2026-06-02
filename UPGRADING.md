@@ -1,5 +1,35 @@
 # Upgrading
 
+## From 0.11.x to 0.12.0
+
+`0.12.0` floor-bumps `sandermuller/package-boost-php` `^0.16.1` → `^0.17.0`. package-boost-php 0.17.0 **narrows its boost-core constraint** from `^0.16 || ^0.17 || ^0.18 || ^0.19` to `^0.18 || ^0.19`, dropping boost-core 0.16/0.17. Since the umbrella inherits boost-core transitively, the effective floor rises to boost-core `^0.18` — the umbrella now resolves boost-core 0.19.0 (and boost-skills 2.0.3, which widened to accept it).
+
+This brings the **`.config/` config layout** (boost-core 0.17+): `boost.php` may live at `.config/boost.php`, with the sync manifest relocated from root `.boost/` to `.config/boost/` (boost-core 0.18+). This package now **dogfoods** that layout — its own config moved to `.config/boost.php`. No code or API change in this package; `McpJsonEmitter`, the `AutoSync` façade, and all shipped skills/guidelines are untouched.
+
+### 1. Bump the constraint
+
+```diff
+- "sandermuller/package-boost-laravel": "^0.11"
++ "sandermuller/package-boost-laravel": "^0.12"
+```
+
+```bash
+composer update sandermuller/package-boost-laravel --with-all-dependencies
+```
+
+### 2. If you pin the lower packages directly
+
+You do not need to — the umbrella resolves the whole stack. But if your project pins `sandermuller/package-boost-php` directly, bump it to `^0.17.0`. boost-core then resolves to `^0.18 || ^0.19` transitively; if you keep a direct boost-core pin, it must allow `^0.18`.
+
+### 3. Optional: adopt the `.config/` layout
+
+boost-core resolves `boost.php` at the repo root **or** `.config/boost.php` — not both (having both is a hard error). Relocating is optional; a root `boost.php` keeps working unchanged. To adopt it: `git mv boost.php .config/boost.php` (avoid `__DIR__`-relative paths in the config — they break when the file moves), then `vendor/bin/boost sync` relocates the manifest to `.config/boost/` and rewrites the managed `.gitignore` block.
+
+### Nothing else changed
+
+- `McpJsonEmitter` activation conditions, the `AutoSync` façade callback, and the `post-install-cmd` / `post-update-cmd` wiring — unchanged.
+- `resources/boost/skills/` + `resources/boost/guidelines/laravel-packages.md` — unchanged.
+
 ## From 0.10.x to 0.11.0
 
 `0.11.0` floor-bumps `sandermuller/package-boost-php` `^0.15 || ^0.16` → `^0.16.1` and **drops the umbrella's direct `sandermuller/boost-core` require**. boost-core is now inherited purely transitively through `package-boost-php`, so the umbrella auto-tracks package-boost-php's boost-core range (`^0.13 || ^0.14 || ^0.15 || ^0.16` as of 0.16.1) instead of restating it — adopting a new boost-core line no longer needs an umbrella constraint bump, only a package-boost-php floor move when warranted.

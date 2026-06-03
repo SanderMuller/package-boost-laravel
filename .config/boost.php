@@ -23,7 +23,6 @@ return BoostConfig::configure()
         'sandermuller/boost-skills',
         'sandermuller/package-boost-laravel',
         'sandermuller/package-boost-php',
-        'laravel/mcp',
         'stolt/lean-package-validator',
     ])
     ->withTags([

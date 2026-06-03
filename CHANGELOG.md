@@ -5,7 +5,41 @@ All notable changes to `sandermuller/package-boost-laravel` will be documented h
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.12.0...HEAD)
+## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.13.0...HEAD)
+
+## [0.13.0](https://github.com/sandermuller/package-boost-laravel/compare/0.12.0...0.13.0) - 2026-06-03
+
+<!-- verified-sha: 2de2b9cfd4999cd74f235ba08b8bac37c9e20393 -->
+Adopts `package-boost-php` 0.18.0 / boost-core 0.20.0. boost-core 0.20 makes `withTags()` array-typed — **consumers with a variadic `->withTags(...)` in their `boost.php` must convert it to the array form**, or the config fatals on load.
+
+### Breaking
+
+- **`withTags()` is now array-typed (boost-core 0.20).** Every `BoostConfig` builder method takes a single `array`; the previous variadic form throws a `TypeError` when `boost.php` / `.config/boost.php` is loaded. `boost sync` cannot auto-migrate it — loading the config executes the call first.
+  
+  ```diff
+  -    ->withTags(Tag::Php, Tag::Laravel, 'release-automation');
+  +    ->withTags([Tag::Php, Tag::Laravel, 'release-automation']);
+  
+  ```
+  `withAgents()`, `withAllowedVendors()`, `withExcludedSkills()`, and `withConventions()` already took arrays — only variadic `withTags()` callers need the edit.
+  
+
+### Changed
+
+- **Floor-bumped `sandermuller/package-boost-php` `^0.17.0` → `^0.18.0`.** package-boost-php 0.18.0 narrows its boost-core constraint to `^0.20` (dropping 0.18/0.19), so the umbrella's transitively-inherited boost-core floor rises to `^0.20` — it now resolves boost-core 0.20.0 and `sandermuller/boost-skills` 2.0.4 (which widened to accept it). boost-core 0.20 also locks the `FileEmitter` / `SkillRenderer` plugin contracts and their DTOs as `@api` (no longer `@experimental`).
+- **`minimum-stability` tightened `dev` → `stable`.** The umbrella's dependency graph resolves fully under `stable`; the `dev` floor was unnecessary. `prefer-stable: true` is kept.
+
+### Fixed
+
+- **`.config/boost.php` no longer ships in the published archive.** Added `.config/ export-ignore` to the managed `.gitattributes` block, so the dogfood config (and the gitignored `.config/boost/` manifest dir) stay out of the Composer tarball.
+- **README `boost.php` example uses the array `withTags([...])` form**, matching boost-core 0.20.
+
+### Consumer impact
+
+- **No code or API change.** `McpJsonEmitter` (on boost-core's now-locked `@api` `FileEmitter` contract), the `AutoSync` façade callback, and the `post-install-cmd` / `post-update-cmd` wiring are untouched.
+- **Action required:** bump the `package-boost-laravel` constraint to `^0.13`, run `composer update --with-all-dependencies`, **and convert any variadic `->withTags(...)` in your `boost.php` / `.config/boost.php` to the array form** shown above. You never need a direct `sandermuller/boost-core` pin — the umbrella resolves the whole stack; if you pin `package-boost-php` directly, bump it to `^0.18.0`. See [UPGRADING.md](https://github.com/SanderMuller/package-boost-laravel/blob/main/UPGRADING.md) for the full migration.
+
+**Full Changelog:** https://github.com/SanderMuller/package-boost-laravel/compare/0.12.0...0.13.0
 
 ## [0.12.0](https://github.com/sandermuller/package-boost-laravel/compare/0.11.1...0.12.0) - 2026-06-03
 
@@ -292,6 +326,7 @@ Pre-0.7.0, installing `package-boost-laravel` (which pulled `boost-core` as a Co
 
 
 
+
 ```
 A dependency's own `post-install-cmd` does not fire in a consuming project — only the root package's scripts run — so this must live in *your* `composer.json`. Otherwise, run `vendor/bin/boost sync` yourself (e.g. in CI). `BOOST_SKIP_AUTOSYNC=1` still disables the callback.
 
@@ -311,6 +346,7 @@ See [`boost-core`'s 0.5 → 0.6 UPGRADING](https://github.com/sandermuller/boost
 
 ```bash
 composer update sandermuller/package-boost-laravel --with-all-dependencies
+
 
 
 
@@ -392,6 +428,7 @@ Tracks the `boost-core` 0.4.0 family release. `package-boost-laravel`'s own surf
 
 
 
+
 ```
 The slug now carries the full Composer `vendor/package` name with the slash rewritten to `__` — a sequence the Composer name spec forbids, so the mapping is collision-free across vendors. A one-time auto-migration with an ownership check relocates existing user-scope skill directories on the next sync; no manual action required.
 
@@ -408,6 +445,7 @@ Both constraints move together — `package-boost-php` 0.4.0 is the floor and it
 
 ```bash
 composer update sandermuller/package-boost-laravel
+
 
 
 
@@ -463,6 +501,7 @@ Laravel 11 is intentionally not supported — `laravel/pao` (an essential dev-ou
 
 ```bash
 composer require --dev sandermuller/package-boost-laravel
+
 
 
 

@@ -1,5 +1,42 @@
 # Upgrading
 
+## From 0.12.x to 0.13.0
+
+`0.13.0` floor-bumps `sandermuller/package-boost-php` `^0.17.0` → `^0.18.0`. package-boost-php 0.18.0 narrows its boost-core constraint to `^0.20` (dropping 0.18/0.19), so the umbrella's transitively-inherited boost-core floor rises to `^0.20` — it now resolves boost-core 0.20.0 (and `sandermuller/boost-skills` 2.0.4, which widened to accept it). No code or API change in this package; `McpJsonEmitter` (on boost-core's now-locked `@api` `FileEmitter` contract) and the `AutoSync` façade are untouched.
+
+### Breaking: `withTags()` is now array-typed
+
+boost-core 0.20 changed every `BoostConfig` builder method — including `withTags()` — to take a single `array`. The previous **variadic** form fatals with a `TypeError` when your `boost.php` / `.config/boost.php` is loaded. Update it together with the constraint bump:
+
+```diff
+-    ->withTags(Tag::Php, Tag::Laravel, 'release-automation');
++    ->withTags([Tag::Php, Tag::Laravel, 'release-automation']);
+```
+
+`withAgents()`, `withAllowedVendors()`, `withExcludedSkills()`, and `withConventions()` already took arrays — only variadic `withTags()` callers need the edit. `boost sync` cannot auto-migrate this for you: loading the config executes the variadic call and throws before any rewrite can run.
+
+### 1. Bump the constraint + fix `withTags()`
+
+```diff
+- "sandermuller/package-boost-laravel": "^0.12"
++ "sandermuller/package-boost-laravel": "^0.13"
+```
+
+```bash
+composer update sandermuller/package-boost-laravel --with-all-dependencies
+```
+
+Then hand-edit the `withTags(...)` call in your `boost.php` / `.config/boost.php` to the array form above and run `vendor/bin/boost sync`.
+
+### 2. If you pin the lower packages directly
+
+You do not need to — the umbrella resolves the whole stack. If you pin `sandermuller/package-boost-php` directly, bump it to `^0.18.0`; boost-core then resolves to `^0.20`. A direct boost-core pin must allow `^0.20`.
+
+### Nothing else changed
+
+- `McpJsonEmitter` activation conditions, the `AutoSync` façade callback, and the `post-install-cmd` / `post-update-cmd` wiring — unchanged.
+- `resources/boost/skills/` + `resources/boost/guidelines/laravel-packages.md` — unchanged.
+
 ## From 0.11.x to 0.12.0
 
 `0.12.0` floor-bumps `sandermuller/package-boost-php` `^0.16.1` → `^0.17.0`. package-boost-php 0.17.0 **narrows its boost-core constraint** from `^0.16 || ^0.17 || ^0.18 || ^0.19` to `^0.18 || ^0.19`, dropping boost-core 0.16/0.17. Since the umbrella inherits boost-core transitively, the effective floor rises to boost-core `^0.18` — the umbrella now resolves boost-core 0.19.0 (and boost-skills 2.0.3, which widened to accept it).

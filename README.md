@@ -75,7 +75,7 @@ return BoostConfig::configure()
         'sandermuller/package-boost-laravel',
         'sandermuller/package-boost-php',
     ])
-    ->withTags(Tag::Php, Tag::Laravel, Tag::Github, 'release-automation');
+    ->withTags([Tag::Php, Tag::Laravel, Tag::Github, 'release-automation']);
 ```
 
 The `release-automation` tag pulls the release-flow skills from `sandermuller/boost-skills`; add `'boost-extension'` to pull `skill-authoring` + `writing-file-emitter` if you author a custom `FileEmitter`. Full `BoostConfig` reference lives in [`sandermuller/boost-core`'s README](https://github.com/sandermuller/boost-core#readme).

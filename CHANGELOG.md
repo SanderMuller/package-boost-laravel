@@ -5,7 +5,31 @@ All notable changes to `sandermuller/package-boost-laravel` will be documented h
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.11.1...HEAD)
+## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.12.0...HEAD)
+
+## [0.12.0](https://github.com/sandermuller/package-boost-laravel/compare/0.11.1...0.12.0) - 2026-06-03
+
+<!-- verified-sha: 3e22f0ff73d7358e4a48b2e74b6534dd3a3c7e7a -->
+The umbrella now tracks `package-boost-php` 0.17.0 — boost-core's effective floor rises to `^0.18` (resolves 0.19.0), and the package adopts boost-core's `.config/` config layout.
+
+### What's changed
+
+#### Changed
+
+- **Floor-bumped `sandermuller/package-boost-php` `^0.16.1` → `^0.17.0`.** package-boost-php 0.17.0 narrows its boost-core constraint from `^0.16 || ^0.17 || ^0.18 || ^0.19` to `^0.18 || ^0.19`, dropping boost-core 0.16/0.17. Since the umbrella inherits boost-core transitively, the effective floor rises to `^0.18` — the umbrella now resolves boost-core 0.19.0. `sandermuller/boost-skills` 2.0.3 (widened to accept boost-core `^0.19`) comes along as the synced dev dep.
+- **Dogfood: relocated this repo's own `boost.php` to `.config/boost.php`.** Adopting boost-core's `.config/` layout — `boost sync` moved the sync manifest from root `.boost/` to `.config/boost/` and rewrote the managed `.gitignore` block accordingly. Internal repo hygiene only; nothing in the shipped package changed.
+
+#### Added
+
+- **boost-core 0.18/0.19 support** via package-boost-php 0.17.0. This brings the `.config/boost.php` config-location option (config file plus its sync manifest grouped under `.config/`) for consumers who want a tidier repo root. boost-core resolves either the root `boost.php` or `.config/boost.php` — not both. Adoption is zero-churn: `boost sync` is idempotent against boost-core 0.19.0 here (`wrote=0`).
+
+### Consumer impact
+
+- **No code or API change.** `McpJsonEmitter`, the `AutoSync` façade callback, the `post-install-cmd` / `post-update-cmd` wiring, and all shipped skills/guidelines are untouched.
+- **Pre-1.0 semver:** narrowing the `package-boost-php` floor drops transitively-inherited boost-core 0.16/0.17 support, treated as breaking in spirit — hence the minor bump.
+- Action required: bump the `package-boost-laravel` constraint to `^0.12` and `composer update --with-all-dependencies`. You never need a direct `sandermuller/boost-core` pin — the umbrella resolves the whole stack. If you pin `package-boost-php` directly, bump it to `^0.17.0`. The `.config/` layout is opt-in — a root `boost.php` keeps working unchanged. See [UPGRADING.md](https://github.com/SanderMuller/package-boost-laravel/blob/main/UPGRADING.md) for the full migration.
+
+**Full Changelog:** https://github.com/SanderMuller/package-boost-laravel/compare/0.11.1...0.12.0
 
 ## [0.11.1](https://github.com/sandermuller/package-boost-laravel/compare/0.11.0...0.11.1) - 2026-05-31
 
@@ -267,6 +291,7 @@ Pre-0.7.0, installing `package-boost-laravel` (which pulled `boost-core` as a Co
 
 
 
+
 ```
 A dependency's own `post-install-cmd` does not fire in a consuming project — only the root package's scripts run — so this must live in *your* `composer.json`. Otherwise, run `vendor/bin/boost sync` yourself (e.g. in CI). `BOOST_SKIP_AUTOSYNC=1` still disables the callback.
 
@@ -286,6 +311,7 @@ See [`boost-core`'s 0.5 → 0.6 UPGRADING](https://github.com/sandermuller/boost
 
 ```bash
 composer update sandermuller/package-boost-laravel --with-all-dependencies
+
 
 
 
@@ -365,6 +391,7 @@ Tracks the `boost-core` 0.4.0 family release. `package-boost-laravel`'s own surf
 
 
 
+
 ```
 The slug now carries the full Composer `vendor/package` name with the slash rewritten to `__` — a sequence the Composer name spec forbids, so the mapping is collision-free across vendors. A one-time auto-migration with an ownership check relocates existing user-scope skill directories on the next sync; no manual action required.
 
@@ -381,6 +408,7 @@ Both constraints move together — `package-boost-php` 0.4.0 is the floor and it
 
 ```bash
 composer update sandermuller/package-boost-laravel
+
 
 
 
@@ -435,6 +463,7 @@ Laravel 11 is intentionally not supported — `laravel/pao` (an essential dev-ou
 
 ```bash
 composer require --dev sandermuller/package-boost-laravel
+
 
 
 

@@ -10,6 +10,7 @@ namespace SanderMuller\PackageBoostLaravel\Tests\Unit\Emitters;
 
 use SanderMuller\BoostCore\Config\BoostConfig;
 use SanderMuller\BoostCore\Enums\Agent;
+use SanderMuller\BoostCore\Sync\EmittedFile;
 use SanderMuller\BoostCore\Sync\InstalledPackages;
 use SanderMuller\BoostCore\Sync\PackageInfo;
 use SanderMuller\BoostCore\Sync\SyncContext;
@@ -43,17 +44,29 @@ function makeBoostAndTestbenchPackages(): InstalledPackages
     ]);
 }
 
+/**
+ * Drains the emitter's iterable return into a list of EmittedFile.
+ *
+ * @return list<EmittedFile>
+ */
+function emitFiles(SyncContext $ctx): array
+{
+    // array_values re-keys to a guaranteed list (emit() returns iterable, whose
+    // spread is array<...> not list<...> to the analyzer).
+    return array_values([...(new McpJsonEmitter())->emit($ctx)]);
+}
+
 it('emits .mcp.json when laravel/boost + testbench are installed and Claude Code is active', function (): void {
     $config = makeConfig([Agent::CLAUDE_CODE, Agent::CURSOR]);
     $ctx = makeContext(makeBoostAndTestbenchPackages(), $config);
 
-    $result = (new McpJsonEmitter())->emit($ctx);
+    $files = emitFiles($ctx);
 
-    expect($result)->not->toBeNull()
-        ->and($result->relativePath)
+    expect($files)->toHaveCount(1)
+        ->and($files[0]->relativePath)
         ->toBe('.mcp.json');
 
-    $decoded = json_decode($result->content, true);
+    $decoded = json_decode($files[0]->content, true);
     expect($decoded)->toBe([
         'mcpServers' => [
             'laravel-boost' => [
@@ -64,41 +77,41 @@ it('emits .mcp.json when laravel/boost + testbench are installed and Claude Code
     ]);
 });
 
-it('returns null when laravel/boost is NOT installed', function (): void {
+it('emits nothing when laravel/boost is NOT installed', function (): void {
     $packages = new InstalledPackages([
         'orchestra/testbench' => new PackageInfo('orchestra/testbench', '11.0.0', '/fake/vendor/orchestra/testbench'),
     ]);
     $config = makeConfig([Agent::CLAUDE_CODE]);
     $ctx = makeContext($packages, $config);
 
-    expect((new McpJsonEmitter())->emit($ctx))->toBeNull();
+    expect(emitFiles($ctx))->toBeEmpty();
 });
 
-it('returns null when orchestra/testbench is NOT installed', function (): void {
+it('emits nothing when orchestra/testbench is NOT installed', function (): void {
     $packages = new InstalledPackages([
         'laravel/boost' => new PackageInfo('laravel/boost', '1.2.3', '/fake/vendor/laravel/boost'),
     ]);
     $config = makeConfig([Agent::CLAUDE_CODE]);
     $ctx = makeContext($packages, $config);
 
-    expect((new McpJsonEmitter())->emit($ctx))->toBeNull();
+    expect(emitFiles($ctx))->toBeEmpty();
 });
 
-it('returns null when Claude Code is NOT in active agents', function (): void {
+it('emits nothing when Claude Code is NOT in active agents', function (): void {
     $config = makeConfig([Agent::CURSOR, Agent::COPILOT]);
     $ctx = makeContext(makeBoostAndTestbenchPackages(), $config);
 
-    expect((new McpJsonEmitter())->emit($ctx))->toBeNull();
+    expect(emitFiles($ctx))->toBeEmpty();
 });
 
 it('produces valid JSON', function (): void {
     $config = makeConfig([Agent::CLAUDE_CODE]);
     $ctx = makeContext(makeBoostAndTestbenchPackages(), $config);
 
-    $result = (new McpJsonEmitter())->emit($ctx);
-    expect($result)->not->toBeNull();
+    $files = emitFiles($ctx);
+    expect($files)->toHaveCount(1);
 
-    $decoded = json_decode($result->content, true);
+    $decoded = json_decode($files[0]->content, true);
     expect($decoded)->toBeArray()
         ->toHaveKey('mcpServers');
 });

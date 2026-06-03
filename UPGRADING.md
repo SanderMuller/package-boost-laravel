@@ -1,5 +1,35 @@
 # Upgrading
 
+## From 0.13.x to 0.14.0
+
+`0.14.0` adopts **boost-core 0.22**. It floor-bumps `sandermuller/package-boost-php` `^0.18.0` → `^0.18.1` (the release that widened its boost-core constraint to `^0.20||^0.21||^0.22`) and **re-introduces a direct `sandermuller/boost-core: ^0.22` require** in this package. The umbrella now resolves boost-core 0.22.0 + `sandermuller/boost-skills` 2.0.6.
+
+### Why a direct `boost-core` require returned
+
+0.11.0 dropped the direct boost-core require in favour of pure transitive resolution through package-boost-php. That no longer holds: boost-core 0.21 changed the `FileEmitter::emit()` contract to return `iterable`, and this package's `McpJsonEmitter` **hard-requires** that contract (boost-core ≥ 0.21). package-boost-php 0.18.1's range still *permits* boost-core 0.20, so the transitive range alone could resolve 0.20 and reverse-fatal the emitter. The umbrella therefore pins `boost-core: ^0.22` itself — an implementation floor, not a new thing consumers declare. You still require only `sandermuller/package-boost-laravel`.
+
+### Action required
+
+Bump the constraint and update the stack:
+
+```diff
+- "sandermuller/package-boost-laravel": "^0.13"
++ "sandermuller/package-boost-laravel": "^0.14"
+```
+
+```bash
+composer update sandermuller/package-boost-laravel --with-all-dependencies
+```
+
+### If you author your own `FileEmitter`
+
+boost-core 0.21 made `FileEmitter::emit()` return `iterable<EmittedFile>` (was `?EmittedFile`). A still-`?EmittedFile` implementation **hard-fatals** the moment boost-core loads it (`Declaration … must be compatible with FileEmitter::emit(): iterable`) — a raw PHP fatal at sync startup. Migrate your `emit()` **before** updating: change the return type to `iterable`, return `[]` instead of `null` to skip, and wrap a single emitted file in an array (`return [new EmittedFile(...)]`). See boost-core's [UPGRADING 0.20 → 0.21](https://github.com/sandermuller/boost-core/blob/main/UPGRADING.md).
+
+### Nothing else changed
+
+- `McpJsonEmitter` activation conditions, the `AutoSync` façade callback, and the `post-install-cmd` / `post-update-cmd` wiring — unchanged (the emitter's emit() signature changed, but it is `@internal` and engine-invoked, never called by consumers).
+- `resources/boost/skills/` + `resources/boost/guidelines/laravel-packages.md` — unchanged.
+
 ## From 0.12.x to 0.13.0
 
 `0.13.0` floor-bumps `sandermuller/package-boost-php` `^0.17.0` → `^0.18.0`. package-boost-php 0.18.0 narrows its boost-core constraint to `^0.20` (dropping 0.18/0.19), so the umbrella's transitively-inherited boost-core floor rises to `^0.20` — it now resolves boost-core 0.20.0 (and `sandermuller/boost-skills` 2.0.4, which widened to accept it). No code or API change in this package; `McpJsonEmitter` (on boost-core's now-locked `@api` `FileEmitter` contract) and the `AutoSync` façade are untouched.

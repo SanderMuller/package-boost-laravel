@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+// Namespaced under SanderMuller\* so PHPStan's `method.internal` same-root-namespace
+// allowance applies: SyncContext has no public factory (the engine builds it; its
+// constructor is @internal), so an emitter unit test must construct one directly.
+
+namespace SanderMuller\PackageBoostLaravel\Tests\Unit\Emitters;
+
 use SanderMuller\BoostCore\Config\BoostConfig;
 use SanderMuller\BoostCore\Enums\Agent;
 use SanderMuller\BoostCore\Sync\InstalledPackages;
@@ -23,14 +29,10 @@ function makeContext(InstalledPackages $packages, BoostConfig $config): SyncCont
  */
 function makeConfig(array $agents): BoostConfig
 {
-    return new BoostConfig(
-        agents: $agents,
-        allowedVendors: [],
-        skillsPath: '/tmp/.ai/skills',
-        guidelinesPath: '/tmp/.ai/guidelines',
-        commandsPath: '/tmp/.ai/commands',
-        disabledEmitters: [],
-    );
+    // Public construction path (the positional constructor is @internal — "build via configure()").
+    return BoostConfig::configure()
+        ->withAgents($agents)
+        ->build('/tmp/test-project');
 }
 
 function makeBoostAndTestbenchPackages(): InstalledPackages

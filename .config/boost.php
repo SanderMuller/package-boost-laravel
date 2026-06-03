@@ -26,11 +26,11 @@ return BoostConfig::configure()
         'laravel/mcp',
         'stolt/lean-package-validator',
     ])
-    ->withTags(
+    ->withTags([
         Tag::Php,
         Tag::Laravel,
         Tag::Github,
         Tag::Pest,
         'release-automation',
         'boost-extension',
-    );
+    ]);

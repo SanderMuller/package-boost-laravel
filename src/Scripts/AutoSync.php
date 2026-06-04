@@ -28,6 +28,10 @@ use SanderMuller\BoostCore\Scripts\BoostAutoSync;
  * the `boost` binary is absent, and warn (not throw) on non-zero exit.
  *
  * @see BoostAutoSync for the full skip/error/exit semantics.
+ *
+ * @api The Composer-script entry point consumers wire into their
+ * `post-install-cmd` / `post-update-cmd` (and any `sync-ai` script). The
+ * `run()` / `runWithSummary()` static signatures are the frozen surface.
  */
 final class AutoSync
 {

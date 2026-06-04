@@ -17,9 +17,12 @@ This package follows Semantic Versioning 2.0.0. Pre-`1.0.0`, MINOR bumps may sti
 
 This façade is the insulation seam: consumers wire their composer scripts here, never at boost-core's `BoostAutoSync` directly, so a one-package install never names a boost-core symbol. Skip/error/exit semantics are boost-core's and fire unchanged through the delegate.
 
-### Service provider
+### Service provider (discovery contract)
 
-- `SanderMuller\PackageBoostLaravel\PackageBoostLaravelServiceProvider` — the discovery entry point, registered via `extra.laravel.providers`. The class FQCN, the `package-boost-laravel` config key, and the `package-boost-laravel-config` publish tag are frozen. (`register()` / `boot()` are framework-invoked.)
+The discovery/behavior contract is frozen; the class itself is `@internal` (framework plumbing — discovered by FQCN, invoked by Laravel, never named/called by consumers, and `register()`/`boot()` implement Laravel's `ServiceProvider` contract, not ours). What's frozen:
+
+- The provider FQCN `SanderMuller\PackageBoostLaravel\PackageBoostLaravelServiceProvider` (renaming/moving it breaks `extra.laravel.providers` discovery).
+- The `package-boost-laravel` config key + the `package-boost-laravel-config` publish tag.
 
 ### `.mcp.json` emission (behavior contract)
 

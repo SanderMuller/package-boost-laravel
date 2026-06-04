@@ -10,9 +10,13 @@ use Override;
  * `extra.laravel.providers` for package discovery. Merges + publishes the
  * `package-boost-laravel` config (publish tag `package-boost-laravel-config`).
  *
- * @api Discovery contract: the class FQCN, the `package-boost-laravel` config
- * key, and the `package-boost-laravel-config` publish tag are the frozen
- * surface. `register()` / `boot()` are framework-invoked lifecycle hooks.
+ * @internal Framework plumbing: discovered by FQCN, instantiated + invoked by
+ * Laravel, never constructed/extended/called by consumers; `register()` /
+ * `boot()` implement Laravel's `ServiceProvider` contract, not ours. What's
+ * frozen is the DISCOVERY/BEHAVIOR contract — the class FQCN, the
+ * `package-boost-laravel` config key, and the `package-boost-laravel-config`
+ * publish tag — documented as such in PUBLIC_API.md, not promised as a
+ * class-API surface. (Same posture as the discovered-by-name McpJsonEmitter.)
  */
 final class PackageBoostLaravelServiceProvider extends ServiceProvider
 {

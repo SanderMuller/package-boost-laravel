@@ -5,7 +5,28 @@ All notable changes to `sandermuller/package-boost-laravel` will be documented h
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.14.0...HEAD)
+## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/0.15.0...HEAD)
+
+## [0.15.0](https://github.com/sandermuller/package-boost-laravel/compare/0.14.0...0.15.0) - 2026-06-04
+
+<!-- verified-sha: a7da050572d5278148c15281e24805d6adc3bf2e -->
+Adopts **boost-core 0.23** (a pre-1.0, additive hardening release) and ships **1.0 preparation** — a `PUBLIC_API.md` and `@api`/`@internal` class markers, aligned with the rest of the boost family ahead of the 1.0 freeze.
+
+### Changed
+
+- **Adopted boost-core 0.23 (widen-only).** Widened the direct `sandermuller/boost-core` require `^0.22` → `^0.22||^0.23` and bumped the `sandermuller/package-boost-php` floor `^0.18.1` → `^0.19.1` (the release that opened boost-core `^0.23`). The stack now resolves boost-core 0.23.0 + `sandermuller/boost-skills` 2.1.0. **No code migration** — boost-core 0.23 changes nothing on the surface this package consumes (`FileEmitter::emit(): iterable` unchanged since 0.21; `BoostBaseCommand` / `BoostSync` / CLI untouched).
+
+### Added (1.0 preparation)
+
+- **`PUBLIC_API.md`** — enumerates this package's semver-protected surface: the `AutoSync` composer-script façade, the service-provider discovery contract, the `.mcp.json` emission behavior, and the `@internal`/regenerable exclusions; points at boost-core's + package-boost-php's `PUBLIC_API.md` for the inherited surface. Pre-1.0 document — the surface locks at `1.0.0`.
+- **`@api` / `@internal` class markers.** The only `@api` class is `Scripts\AutoSync` (the composer-script entry point consumers wire by name in their own `post-install-cmd` / `sync-ai`). `PackageBoostLaravelServiceProvider` and `Emitters\McpJsonEmitter` are `@internal` — discovered by FQCN and invoked by the framework / boost-core engine, never named or called by consumers; their FQCN/config-key/publish-tag and the `.mcp.json` emission behavior are documented as contracts in `PUBLIC_API.md` instead.
+
+### Consumer impact
+
+- **No code or API change.** The `AutoSync` façade callback, the `post-install-cmd` / `post-update-cmd` wiring, `McpJsonEmitter` activation conditions, and all shipped skills/guidelines are untouched. The `@api`/`@internal` markers document the existing surface; they don't change behavior.
+- Action required: bump the `package-boost-laravel` constraint to `^0.15` and `composer update --with-all-dependencies`. If you pin `package-boost-php` directly, bump it to `^0.19.1`. See [UPGRADING.md](https://github.com/SanderMuller/package-boost-laravel/blob/main/UPGRADING.md).
+
+**Full Changelog:** https://github.com/SanderMuller/package-boost-laravel/compare/0.14.0...0.15.0
 
 ## [0.14.0](https://github.com/sandermuller/package-boost-laravel/compare/0.13.0...0.14.0) - 2026-06-03
 
@@ -49,6 +70,7 @@ Adopts `package-boost-php` 0.18.0 / boost-core 0.20.0. boost-core 0.20 makes `wi
   ```diff
   -    ->withTags(Tag::Php, Tag::Laravel, 'release-automation');
   +    ->withTags([Tag::Php, Tag::Laravel, 'release-automation']);
+  
   
   
   ```
@@ -359,6 +381,7 @@ Pre-0.7.0, installing `package-boost-laravel` (which pulled `boost-core` as a Co
 
 
 
+
 ```
 A dependency's own `post-install-cmd` does not fire in a consuming project — only the root package's scripts run — so this must live in *your* `composer.json`. Otherwise, run `vendor/bin/boost sync` yourself (e.g. in CI). `BOOST_SKIP_AUTOSYNC=1` still disables the callback.
 
@@ -378,6 +401,7 @@ See [`boost-core`'s 0.5 → 0.6 UPGRADING](https://github.com/sandermuller/boost
 
 ```bash
 composer update sandermuller/package-boost-laravel --with-all-dependencies
+
 
 
 
@@ -463,6 +487,7 @@ Tracks the `boost-core` 0.4.0 family release. `package-boost-laravel`'s own surf
 
 
 
+
 ```
 The slug now carries the full Composer `vendor/package` name with the slash rewritten to `__` — a sequence the Composer name spec forbids, so the mapping is collision-free across vendors. A one-time auto-migration with an ownership check relocates existing user-scope skill directories on the next sync; no manual action required.
 
@@ -479,6 +504,7 @@ Both constraints move together — `package-boost-php` 0.4.0 is the floor and it
 
 ```bash
 composer update sandermuller/package-boost-laravel
+
 
 
 
@@ -536,6 +562,7 @@ Laravel 11 is intentionally not supported — `laravel/pao` (an essential dev-ou
 
 ```bash
 composer require --dev sandermuller/package-boost-laravel
+
 
 
 

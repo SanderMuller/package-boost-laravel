@@ -1,5 +1,32 @@
 # Upgrading
 
+## From 0.14.x to 0.15.0
+
+`0.15.0` adopts **boost-core 0.23** (a pre-1.0, additive hardening release) and ships 1.0-prep. boost-core 0.23 changes **nothing** on the surface this package consumes — the `FileEmitter::emit(): iterable` contract is unchanged since 0.21 — so this is a widen-only adoption with no code migration.
+
+### Action required
+
+```diff
+- "sandermuller/package-boost-laravel": "^0.14"
++ "sandermuller/package-boost-laravel": "^0.15"
+```
+
+```bash
+composer update sandermuller/package-boost-laravel --with-all-dependencies
+```
+
+This widens the umbrella's direct `sandermuller/boost-core` to `^0.22||^0.23` and bumps the `sandermuller/package-boost-php` floor to `^0.19.1` (the release that opened boost-core `^0.23`). The stack resolves boost-core 0.23.0 + boost-skills 2.1.0. If you pin `package-boost-php` directly, bump it to `^0.19.1`.
+
+### Also in this release (1.0 preparation)
+
+- **`PUBLIC_API.md`** — enumerates this package's semver-protected surface ahead of the family's 1.0. It is a pre-1.0 document; the surface locks at `1.0.0`.
+- **`@api` / `@internal` class markers.** The only `@api` class is `Scripts\AutoSync` (the composer-script façade consumers wire by name). `PackageBoostLaravelServiceProvider` and `Emitters\McpJsonEmitter` are `@internal` — discovered by FQCN and invoked by the framework / boost-core engine, never named or called by consumers; their FQCN/config-key/publish-tag and the `.mcp.json` emission behavior are documented as contracts in `PUBLIC_API.md` instead. No runtime change.
+
+### Nothing else changed
+
+- `McpJsonEmitter` activation conditions, the `AutoSync` façade callback, and the `post-install-cmd` / `post-update-cmd` wiring — unchanged.
+- `resources/boost/skills/` + `resources/boost/guidelines/laravel-packages.md` — unchanged.
+
 ## From 0.13.x to 0.14.0
 
 `0.14.0` adopts **boost-core 0.22**. It floor-bumps `sandermuller/package-boost-php` `^0.18.0` → `^0.18.1` (the release that widened its boost-core constraint to `^0.20||^0.21||^0.22`) and **re-introduces a direct `sandermuller/boost-core: ^0.22` require** in this package. The umbrella now resolves boost-core 0.22.0 + `sandermuller/boost-skills` 2.0.6.

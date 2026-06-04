@@ -48,7 +48,7 @@ Inherits everything `package-boost-php` ships — `foundation` guideline, `lean`
 composer require --dev sandermuller/package-boost-laravel
 ```
 
-PHP 8.3+ and Laravel 12 or 13. `sandermuller/package-boost-php`, `sandermuller/boost-core`, and `stolt/lean-package-validator` all come in transitively — do **not** require any of them separately, they resolve through this umbrella. A Laravel-package author requires only `sandermuller/package-boost-laravel` and gets the whole stack. (Internally this package now pins `sandermuller/boost-core` directly at `^0.22` so its `McpJsonEmitter` is guaranteed the iterable `FileEmitter` contract — an implementation floor, not something you declare.)
+PHP 8.3+ and Laravel 12 or 13. `sandermuller/package-boost-php`, `sandermuller/boost-core`, and `stolt/lean-package-validator` all come in transitively — do **not** require any of them separately, they resolve through this umbrella. A Laravel-package author requires only `sandermuller/package-boost-laravel` and gets the whole stack. (Internally this package pins `sandermuller/boost-core` directly so its `McpJsonEmitter` is guaranteed the iterable `FileEmitter` contract — boost-core ≥ 0.21 — an implementation floor, not something you declare.)
 
 ## First run
 

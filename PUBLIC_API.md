@@ -6,7 +6,7 @@ This package is a thin Laravel umbrella. Most of what a consumer touches — the
 
 ## Versioning
 
-This package follows Semantic Versioning 2.0.0. Pre-`1.0.0`, MINOR bumps may still break the public API (called out in `CHANGELOG.md` / `UPGRADING.md`). From `1.0.0` on, the surface below is locked for the `1.x` line. A consumer requires only `sandermuller/package-boost-laravel`; the rest of the stack resolves transitively.
+This package follows Semantic Versioning 2.0.0. From `1.0.0` on, the surface below is locked for the `1.x` line — it will not break in a MINOR or PATCH. A consumer requires only `sandermuller/package-boost-laravel`; the rest of the stack resolves transitively.
 
 ## Stable surface
 
@@ -17,12 +17,7 @@ This package follows Semantic Versioning 2.0.0. Pre-`1.0.0`, MINOR bumps may sti
 
 This façade is the insulation seam: consumers wire their composer scripts here, never at boost-core's `BoostAutoSync` directly, so a one-package install never names a boost-core symbol. Skip/error/exit semantics are boost-core's and fire unchanged through the delegate.
 
-### Service provider (discovery contract)
-
-The discovery/behavior contract is frozen; the class itself is `@internal` (framework plumbing — discovered by FQCN, invoked by Laravel, never named/called by consumers, and `register()`/`boot()` implement Laravel's `ServiceProvider` contract, not ours). What's frozen:
-
-- The provider FQCN `SanderMuller\PackageBoostLaravel\PackageBoostLaravelServiceProvider` (renaming/moving it breaks `extra.laravel.providers` discovery).
-- The `package-boost-laravel` config key + the `package-boost-laravel-config` publish tag.
+This package ships **no service provider**. It is a dev-time tool — its work happens during `boost sync` (the `.mcp.json` emitter below) and through the shipped skills/guidelines, none of which run inside a host application's container. There is no application-runtime config to merge or publish.
 
 ### `.mcp.json` emission (behavior contract)
 

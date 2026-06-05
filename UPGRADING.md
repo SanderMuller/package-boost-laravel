@@ -1,5 +1,43 @@
 # Upgrading
 
+## From 0.15.x to 1.0.0
+
+`1.0.0` is the API freeze. It adopts the boost family's 1.0 line and removes one piece of dead scaffolding. The surface in [`PUBLIC_API.md`](PUBLIC_API.md) is now locked for the `1.x` line.
+
+### Action required
+
+```diff
+- "sandermuller/package-boost-laravel": "^0.15"
++ "sandermuller/package-boost-laravel": "^1.0"
+```
+
+```bash
+composer update sandermuller/package-boost-laravel --with-all-dependencies
+```
+
+This narrows the umbrella's direct `sandermuller/boost-core` to `^1.0` and bumps `sandermuller/package-boost-php` to `^1.0`. The 0.x ranges are dropped: `package-boost-php` 1.0.0 requires `boost-core ^1.0`-only, so keeping a `^0.23` range here would conflict. The stack resolves the boost-core `1.x` line (1.0.0 froze the 0.23.3 surface as a drop-in; later `1.x` minors are additive) + package-boost-php `1.x`. If you pin `package-boost-php` directly, bump it to `^1.0`.
+
+### Breaking: the service provider was removed
+
+`SanderMuller\PackageBoostLaravel\PackageBoostLaravelServiceProvider`, the `config/package-boost-laravel.php` file, the `package-boost-laravel` config key, and the `package-boost-laravel-config` publish tag are **gone**, along with the `extra.laravel.providers` discovery entry.
+
+They were dead scaffolding — the shipped config was empty, nothing read the config key, and this package's work happens entirely during `boost sync` (the `.mcp.json` emitter, discovered independently via `extra.boost.emitters`) and through the shipped skills/guidelines, none of which run inside a host application's container. Removing them before the freeze avoids locking a no-op discovery contract for the whole `1.x` line.
+
+**Impact:** none for normal use. Only affects you if you explicitly referenced any of those symbols:
+
+- If you registered the provider manually (e.g. in a `config/app.php` or a `testbench.yaml` `providers:` list), remove that line.
+- If you published or read the `package-boost-laravel` config, drop it — it was always empty.
+
+### `illuminate/*` moved to `require-dev`
+
+With the service provider gone, no shipped code in this package executes against the framework — `Scripts\AutoSync` and `Emitters\McpJsonEmitter` are pure PHP over boost-core. `illuminate/contracts` and `illuminate/support` therefore moved from `require` to `require-dev` (they back only the dev-time Testbench workbench). This package no longer forces a Laravel `^12||^13` constraint into your dependency graph, so it installs cleanly as a dev tool regardless of which Laravel major your own package targets. The Laravel-flavored skills and the `.mcp.json` emission are unchanged.
+
+### Nothing else changed
+
+- `Scripts\AutoSync::run` / `runWithSummary`, the `post-install-cmd` / `post-update-cmd` wiring, and the `composer sync-ai` script — unchanged.
+- `McpJsonEmitter` activation conditions and the emitted `.mcp.json` shape — unchanged.
+- `resources/boost/skills/` + `resources/boost/guidelines/laravel-packages.md` — unchanged.
+
 ## From 0.14.x to 0.15.0
 
 `0.15.0` adopts **boost-core 0.23** (a pre-1.0, additive hardening release) and ships 1.0-prep. boost-core 0.23 changes **nothing** on the surface this package consumes — the `FileEmitter::emit(): iterable` contract is unchanged since 0.21 — so this is a widen-only adoption with no code migration.

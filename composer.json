@@ -23,14 +23,14 @@
     ],
     "require": {
         "php": "^8.3",
-        "illuminate/contracts": "^12.0||^13.0",
-        "illuminate/support": "^12.0||^13.0",
-        "sandermuller/boost-core": "^0.22||^0.23",
-        "sandermuller/package-boost-php": "^0.19.1"
+        "sandermuller/boost-core": "^1.0",
+        "sandermuller/package-boost-php": "^1.0"
     },
     "require-dev": {
         "composer/composer": "^2.7",
         "driftingly/rector-laravel": "^2.3",
+        "illuminate/contracts": "^12.0||^13.0",
+        "illuminate/support": "^12.0||^13.0",
         "larastan/larastan": "^3.9",
         "laravel/boost": "^2.0||^3.0",
         "laravel/pao": "^1.0",
@@ -68,11 +68,6 @@
         "boost": {
             "emitters": [
                 "SanderMuller\\PackageBoostLaravel\\Emitters\\McpJsonEmitter"
-            ]
-        },
-        "laravel": {
-            "providers": [
-                "SanderMuller\\PackageBoostLaravel\\PackageBoostLaravelServiceProvider"
             ]
         }
     },

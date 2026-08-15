@@ -24,7 +24,7 @@ AI agent skills, guidelines, and `.mcp.json` emission for Laravel-package author
 
 ## What you get
 
-**`McpJsonEmitter`** — the zero-overlap claim against `laravel/boost`. Writes `.mcp.json` on every `boost sync`, idempotent, with the command pointed at `vendor/bin/testbench boost:mcp` (not `php artisan`) so the MCP server actually boots in a package codebase. `laravel/boost` writes `.mcp.json` once at install time against `php artisan`, which doesn't exist here. The emitter fires only when all three conditions hold: `laravel/boost` is in your dev dependencies, `orchestra/testbench` is in your dev dependencies, and `Agent::CLAUDE_CODE` is in your active agents. Otherwise it returns null and skips silently.
+**`McpJsonEmitter`** — the zero-overlap claim against `laravel/boost`. Updates `.mcp.json` on every `boost sync`, idempotent, with the command pointed at `vendor/bin/testbench boost:mcp` (not `php artisan`) so the MCP server actually boots in a package codebase. It merges: only `mcpServers.laravel-boost` is touched, so your own servers, other top-level keys, and extra keys on that entry (`env`, `alwaysLoad`) survive — and a `.mcp.json` it cannot parse is left alone rather than overwritten. `laravel/boost` writes `.mcp.json` once at install time against `php artisan`, which doesn't exist here. The emitter fires only when all three conditions hold: `laravel/boost` is in your dev dependencies, `orchestra/testbench` is in your dev dependencies, and `Agent::CLAUDE_CODE` is in your active agents. Otherwise it returns null and skips silently.
 
 **Three Laravel-flavored skills** — on-demand workflows for Laravel-package authorship. All three are untagged, so they ship whenever this package is installed.
 

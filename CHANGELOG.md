@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/1.0.0...HEAD)
 
+### Fixed
+
+- **`McpJsonEmitter` no longer deletes the other servers in `.mcp.json`.** It returned a freshly-built document holding only `laravel-boost`, and boost-core writes emitter output wholesale — so every other `mcpServers` entry was removed on each `boost sync`. Once boost owned the path (it created the file), that happened with **no diagnostic at all**; only the first-adoption case over a pre-existing file was warned about. The emitter now reads the current `.mcp.json` and changes only `mcpServers.laravel-boost`, keeping other servers, other top-level keys (`inputs`, …), and any extra keys on our own entry (`env`, `alwaysLoad`, …). This matches what `laravel/boost` itself does — its `Install\Mcp\FileWriter` decodes and sets only its own key.
+  - An existing file that cannot be parsed (malformed JSON, JSON5 comments, an unexpected shape) is emitted back verbatim rather than overwritten — which also keeps boost-core's ownership of a `.mcp.json` it created, where yielding nothing would have quietly dropped it and made the next sync treat the file as foreign. Throwing was rejected deliberately: boost-core counts an emitter throw as a sync error, which would fail the whole run over an unrelated file.
+  - The merge walks the decoded JSON **object graph**, not an associative array, so an unrelated empty object (another server's `env: {}`) is not rewritten as `[]` and numeric-looking object keys are not renumbered.
+  - When the file already says what the emitter wants, the original bytes are handed back, so an operator's indentation and key order survive and the sync reports it unchanged instead of reformatting on every run.
+  - Covered by unit tests plus end-to-end tests that drive boost-core's real `SyncEngine` — the clobber was an emitter/engine interaction that testing the returned content alone could not catch.
+
 ## [1.0.0](https://github.com/sandermuller/package-boost-laravel/compare/0.15.0...1.0.0) - 2026-06-05
 
 <!-- verified-sha: f936ed18770a5627c4a435a398ce08af5058b2bb -->

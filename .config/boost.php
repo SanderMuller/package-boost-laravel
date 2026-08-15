@@ -32,4 +32,5 @@ return BoostConfig::configure()
         Tag::Pest,
         'release-automation',
         'boost-extension',
+        'voice',
     ]);

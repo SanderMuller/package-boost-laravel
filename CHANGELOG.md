@@ -5,15 +5,32 @@ All notable changes to `sandermuller/package-boost-laravel` will be documented h
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/1.0.0...HEAD)
+## [Unreleased](https://github.com/sandermuller/package-boost-laravel/compare/1.1.0...HEAD)
+
+## [1.1.0](https://github.com/sandermuller/package-boost-laravel/compare/1.0.0...1.1.0) - 2026-08-15
+
+<!-- verified-sha: d47d17dc6cc26309ff5444b8382b8912e58f416d -->
+`McpJsonEmitter` no longer overwrites a `.mcp.json` that already has content in it. This release also raises the `sandermuller/boost-core` floor from `^1.0` to `^1.6`, the engine line the suite now runs against.
 
 ### Fixed
 
-- **`McpJsonEmitter` no longer deletes the other servers in `.mcp.json`.** It returned a freshly-built document holding only `laravel-boost`, and boost-core writes emitter output wholesale — so every other `mcpServers` entry was removed on each `boost sync`. Once boost owned the path (it created the file), that happened with **no diagnostic at all**; only the first-adoption case over a pre-existing file was warned about. The emitter now reads the current `.mcp.json` and changes only `mcpServers.laravel-boost`, keeping other servers, other top-level keys (`inputs`, …), and any extra keys on our own entry (`env`, `alwaysLoad`, …). This matches what `laravel/boost` itself does — its `Install\Mcp\FileWriter` decodes and sets only its own key.
-  - An existing file that cannot be parsed (malformed JSON, JSON5 comments, an unexpected shape) is emitted back verbatim rather than overwritten — which also keeps boost-core's ownership of a `.mcp.json` it created, where yielding nothing would have quietly dropped it and made the next sync treat the file as foreign. Throwing was rejected deliberately: boost-core counts an emitter throw as a sync error, which would fail the whole run over an unrelated file.
-  - The merge walks the decoded JSON **object graph**, not an associative array, so an unrelated empty object (another server's `env: {}`) is not rewritten as `[]` and numeric-looking object keys are not renumbered.
-  - When the file already says what the emitter wants, the original bytes are handed back, so an operator's indentation and key order survive and the sync reports it unchanged instead of reformatting on every run.
-  - Covered by unit tests plus end-to-end tests that drive boost-core's real `SyncEngine` — the clobber was an emitter/engine interaction that testing the returned content alone could not catch.
+- **`McpJsonEmitter` merges into `.mcp.json` instead of replacing it.** `.mcp.json` is a shared file: an operator adds their own servers to it, and `laravel/boost` writes into it as well. The emitter previously returned a freshly-built document, and boost-core writes whatever an emitter returns wholesale — so every `boost sync` silently deleted every other `mcpServers` entry once boost owned the path. The emitter now reads the current file and changes only `mcpServers.laravel-boost`. Other servers, other top-level keys, and extra keys on the `laravel-boost` entry itself (`env`, `alwaysLoad`, and anything else) survive the write. A `.mcp.json` the emitter cannot parse — malformed JSON, JSON5 comments, a non-object shape — is left alone rather than overwritten, and the emitter returns nothing instead of throwing, so one unreadable file does not fail the whole sync run.
+
+### Changed
+
+- **`sandermuller/boost-core` floor raised `^1.0` → `^1.6`.** The `1.6` line is what the emitter's merge behaviour is verified against. `sandermuller/package-boost-php` stays at `^1.0` and resolves against the same range, so the stack still installs as one set.
+
+### Internal
+
+- **Dropped `rector/type-perfect`.** The package is abandoned upstream. Its two enabled rules, `null_over_false` and `narrow_return`, have no equivalent in `tomasvotruba/type-coverage`, which this repo already required, so the `type_perfect` block was removed from `phpstan.neon.dist` rather than migrated. Dev-only — nothing in the shipped surface changes.
+- `sandermuller/boost-skills` raised `^2.0` → `^2.27` for this repo's own agent guidelines, and `actions/checkout` bumped 6 → 7 across the CI workflows.
+
+### Consumer impact
+
+- Run `composer update sandermuller/package-boost-laravel --with-all-dependencies`. If you pin `sandermuller/boost-core` directly, your constraint must allow `^1.6`.
+- If you keep your own entries in `.mcp.json`, they are no longer lost on sync. Entries an earlier version deleted are not recovered — re-add them once and they will persist from here.
+
+**Full Changelog:** https://github.com/SanderMuller/package-boost-laravel/compare/1.0.0...1.1.0
 
 ## [1.0.0](https://github.com/sandermuller/package-boost-laravel/compare/0.15.0...1.0.0) - 2026-06-05
 
@@ -94,6 +111,7 @@ Adopts `package-boost-php` 0.18.0 / boost-core 0.20.0. boost-core 0.20 makes `wi
   ```diff
   -    ->withTags(Tag::Php, Tag::Laravel, 'release-automation');
   +    ->withTags([Tag::Php, Tag::Laravel, 'release-automation']);
+  
   
   
   
@@ -408,6 +426,7 @@ Pre-0.7.0, installing `package-boost-laravel` (which pulled `boost-core` as a Co
 
 
 
+
 ```
 A dependency's own `post-install-cmd` does not fire in a consuming project — only the root package's scripts run — so this must live in *your* `composer.json`. Otherwise, run `vendor/bin/boost sync` yourself (e.g. in CI). `BOOST_SKIP_AUTOSYNC=1` still disables the callback.
 
@@ -427,6 +446,7 @@ See [`boost-core`'s 0.5 → 0.6 UPGRADING](https://github.com/sandermuller/boost
 
 ```bash
 composer update sandermuller/package-boost-laravel --with-all-dependencies
+
 
 
 
@@ -516,6 +536,7 @@ Tracks the `boost-core` 0.4.0 family release. `package-boost-laravel`'s own surf
 
 
 
+
 ```
 The slug now carries the full Composer `vendor/package` name with the slash rewritten to `__` — a sequence the Composer name spec forbids, so the mapping is collision-free across vendors. A one-time auto-migration with an ownership check relocates existing user-scope skill directories on the next sync; no manual action required.
 
@@ -532,6 +553,7 @@ Both constraints move together — `package-boost-php` 0.4.0 is the floor and it
 
 ```bash
 composer update sandermuller/package-boost-laravel
+
 
 
 
@@ -591,6 +613,7 @@ Laravel 11 is intentionally not supported — `laravel/pao` (an essential dev-ou
 
 ```bash
 composer require --dev sandermuller/package-boost-laravel
+
 
 
 

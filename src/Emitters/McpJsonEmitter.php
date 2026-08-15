@@ -29,10 +29,12 @@ use stdClass;
  * unknown keys ON our own entry (`env`, `alwaysLoad`, …) intact.
  *
  * When the existing file cannot be parsed — malformed JSON, JSON5 comments, a
- * non-object shape — nothing is emitted rather than overwritten. Preserving an
- * unreadable file beats replacing it, and throwing is worse still: boost-core
- * counts an emitter throw as a sync error, which would fail the whole run over an
- * unrelated file.
+ * non-object shape — its current bytes are emitted verbatim rather than
+ * overwritten (see {@see self::unchanged()} for why handing the bytes back beats
+ * emitting nothing). Preserving an unparseable file beats replacing it, and
+ * throwing is worse still: boost-core counts an emitter throw as a sync error,
+ * which would fail the whole run over an unrelated file. Only a file that cannot
+ * be read at all yields nothing — there are no bytes to preserve.
  *
  * @internal This is package-boost-laravel's own emitter — discovered and
  * invoked by boost-core's sync engine, never called by consumers. Its

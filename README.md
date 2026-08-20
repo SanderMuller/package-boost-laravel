@@ -8,66 +8,46 @@
 
 AI agent skills, guidelines, and `.mcp.json` emission for Laravel-package authors. Inherits the framework-agnostic package-author toolkit from [`sandermuller/package-boost-php`](https://github.com/sandermuller/package-boost-php) and layers on Laravel-specific context: Testbench conventions, cross-version Laravel support, CI matrix diagnostics, and the `McpJsonEmitter` that wires `laravel/boost`'s MCP server into Claude Code during `boost sync`.
 
+**Documentation: <https://sandermuller.github.io/boost-core/packages/package-boost-laravel/>**
+
 ![overview image](overview.png)
 
-> Where [`laravel/boost`](https://github.com/laravel/boost) targets Laravel **application** developers, `package-boost-laravel` targets the people building Laravel **packages** — the dev-time codebase where `app/`, `bootstrap/`, and `.env` don't exist and `php artisan` doesn't apply. Coexists cleanly with `laravel/boost` if you also dogfood it from inside your package's test app.
-
-## Which package fits your role?
-
-| You're building                          | Install                                                                                       | Ships                                                                                                |
-|------------------------------------------|-----------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------|
-| A PHP application (not a package)        | [`sandermuller/project-boost-php`](https://github.com/sandermuller/project-boost-php)         | App-dev skills: dependency injection, legacy coexistence + the `foundation` guideline                |
-| A Laravel application                    | [`sandermuller/project-boost-laravel`](https://github.com/sandermuller/project-boost-laravel) | `laravel/boost` MCP coexistence + nine-agent fanout + tag filter + remote skills                     |
-| A framework-agnostic Composer package    | [`sandermuller/package-boost-php`](https://github.com/sandermuller/package-boost-php)         | Package-author skills + `lean` / `gitattributes` commands                                            |
-| **A Laravel package**                    | **[`sandermuller/package-boost-laravel`](https://github.com/sandermuller/package-boost-laravel)** | **Laravel-package skills + `McpJsonEmitter`  ← you are here**                                    |
-| Your own skill bundle, or custom tooling | [`sandermuller/boost-core`](https://github.com/sandermuller/boost-core)                       | The sync engine. You supply the skills.                                                              |
+> Where [`laravel/boost`](https://github.com/laravel/boost) targets Laravel
+> **application** developers, this package targets the people building Laravel
+> **packages** — the dev-time codebase where `app/`, `bootstrap/` and `.env` do
+> not exist and `php artisan` does not apply. Not sure which family member fits?
+> The [picker](https://sandermuller.github.io/boost-core/guide/which-package)
+> decides it in two questions.
 
 ## What you get
 
-**`McpJsonEmitter`** — the zero-overlap claim against `laravel/boost`. Updates `.mcp.json` on every `boost sync`, idempotent, with the command pointed at `vendor/bin/testbench boost:mcp` (not `php artisan`) so the MCP server actually boots in a package codebase. It merges: only `mcpServers.laravel-boost` is touched, so your own servers, other top-level keys, and extra keys on that entry (`env`, `alwaysLoad`) survive — and a `.mcp.json` it cannot parse is left alone rather than overwritten. `laravel/boost` writes `.mcp.json` once at install time against `php artisan`, which doesn't exist here. The emitter fires only when all three conditions hold: `laravel/boost` is in your dev dependencies, `orchestra/testbench` is in your dev dependencies, and `Agent::CLAUDE_CODE` is in your active agents. Otherwise it returns null and skips silently.
+**`McpJsonEmitter`** — the zero-overlap claim against `laravel/boost`. It updates `.mcp.json` on every `boost sync`, idempotently, with the command pointed at `vendor/bin/testbench boost:mcp` (not `php artisan`) so the MCP server actually boots in a package codebase. It merges rather than overwrites: only `mcpServers.laravel-boost` is touched, so your own servers, other top-level keys, and extra keys on that entry survive, and a `.mcp.json` it cannot parse is left alone. It fires only when `laravel/boost` and `orchestra/testbench` are both in your dev dependencies **and** `Agent::CLAUDE_CODE` is active; otherwise it skips silently.
 
-**Three Laravel-flavored skills** — on-demand workflows for Laravel-package authorship. All three are untagged, so they ship whenever this package is installed.
+**Three Laravel skills.** All untagged, so they ship whenever this package is installed.
 
-| Skill                          | When it loads                                                                                                              | Tag |
-|--------------------------------|----------------------------------------------------------------------------------------------------------------------------|-----|
-| `package-development`          | Testbench conventions: `vendor/bin/testbench` vs `php artisan`, service-provider registration in `testbench.yaml`, `workbench/` layout for fixtures, migrations, routes, factories. | —   |
-| `cross-version-laravel-support`| Supporting multiple Laravel majors in one release: `^12.0\|\|^13.0` constraint patterns, version-specific API shims, CI matrix shape including `prefer-lowest`. | —   |
-| `ci-matrix-troubleshooting`    | Debugging "fails on prefer-lowest" / "fails on Laravel 13 but not 12" type matrix failures.                                | —   |
+| Skill | When it loads |
+|---|---|
+| `package-development` | Testbench conventions: `vendor/bin/testbench` versus `php artisan`, service-provider registration in `testbench.yaml`, the `workbench/` layout |
+| `cross-version-laravel-support` | Several Laravel majors in one release: constraint patterns, version shims, the CI matrix shape including `prefer-lowest` |
+| `ci-matrix-troubleshooting` | Debugging "fails on prefer-lowest" and "fails on Laravel 13 but not 12" matrix failures |
 
-**One Laravel guideline** — pinned context for AI agents working in a Laravel-package codebase.
+**One Laravel guideline** — `laravel-packages`. The detection rule (`require.illuminate/*` or `require.laravel/framework`), Testbench context, the artisan-substitution table, and a cross-version pointer. It composes with the framework-agnostic `foundation` guideline inherited from `package-boost-php`.
 
-| Guideline          | Scope                                                                                                                                                                | Tag |
-|--------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----|
-| `laravel-packages` | Detection rule (`require.illuminate/*` or `require.laravel/framework`), Testbench context, artisan-substitution table, cross-version compatibility pointer. Composes with the framework-agnostic `foundation` guideline inherited from `package-boost-php`. | —   |
-
-Inherits everything `package-boost-php` ships — `foundation` guideline, `lean` / `gitattributes` CLI commands, the `lean-dist` skill, and the release-flow content skills (`readme`, `release-notes`, `upgrading`) from `sandermuller/boost-skills` under the `release-automation` tag. The `skill-authoring` + `writing-file-emitter` skills ship too but are gated behind the `boost-extension` tag — declare it if your package extends the engine with a custom `FileEmitter` (this package does, for `McpJsonEmitter`).
+Everything `package-boost-php` ships comes along: the `foundation` guideline, the `lean` and `gitattributes` CLI commands, and the `lean-dist` skill.
 
 ## Install
 
 ```bash
 composer require --dev sandermuller/package-boost-laravel
+vendor/bin/boost install   # pick agents and allowlist vendors
+vendor/bin/boost sync      # fan skills + guidelines out
 ```
 
-PHP 8.3+ and Laravel 12 or 13. `sandermuller/package-boost-php`, `sandermuller/boost-core`, and `stolt/lean-package-validator` all come in transitively — do **not** require any of them separately, they resolve through this umbrella. A Laravel-package author requires only `sandermuller/package-boost-laravel` and gets the whole stack. (Internally this package pins `sandermuller/boost-core` directly so its `McpJsonEmitter` is guaranteed the iterable `FileEmitter` contract — boost-core ≥ 0.21 — an implementation floor, not something you declare.)
+PHP 8.3+ and Laravel 12 or 13. `sandermuller/package-boost-php`, `sandermuller/boost-core`, and `stolt/lean-package-validator` all come in transitively — do **not** require any of them separately.
 
-## First run
-
-```bash
-vendor/bin/boost install   # interactive: pick agents, allowlist vendors (writes boost.php)
-vendor/bin/boost sync      # fan out skills + guidelines to selected agents
-```
-
-If `laravel/boost` + `orchestra/testbench` are in your dev deps and Claude Code is one of your active agents, `boost sync` writes `.mcp.json` automatically. Generated agent dirs (`.claude/`, `.cursor/`, etc.) are added to `.gitignore`; edit `.ai/` only, then re-run `vendor/bin/boost sync`.
-
-## `boost.php` config
+Allowlist both package vendors in `boost.php`, since inheritance is a Composer dependency and not an allowlist entry:
 
 ```php
-<?php declare(strict_types=1);
-
-use SanderMuller\BoostCore\Config\BoostConfig;
-use SanderMuller\BoostCore\Enums\Agent;
-use SanderMuller\BoostCore\Enums\Tag;
-
 return BoostConfig::configure()
     ->withAgents([Agent::CLAUDE_CODE, Agent::COPILOT, Agent::CODEX])
     ->withAllowedVendors([
@@ -78,28 +58,18 @@ return BoostConfig::configure()
     ->withTags([Tag::Php, Tag::Laravel, Tag::Github, 'release-automation']);
 ```
 
-The `release-automation` tag pulls the release-flow skills from `sandermuller/boost-skills`; add `'boost-extension'` to pull `skill-authoring` + `writing-file-emitter` if you author a custom `FileEmitter`. Full `BoostConfig` reference lives in [`sandermuller/boost-core`'s README](https://github.com/sandermuller/boost-core#readme).
+## Documentation
 
-## Coexistence and inheritance
+| Topic | Page |
+|---|---|
+| `McpJsonEmitter`, the skills, what it inherits | [Overview](https://sandermuller.github.io/boost-core/packages/package-boost-laravel/) |
+| Install and first run | [Install](https://sandermuller.github.io/boost-core/packages/package-boost-laravel/install) |
+| `boost.php`, tags, inheritance, coexistence, auto-sync | [Configuration](https://sandermuller.github.io/boost-core/packages/package-boost-laravel/configuration) |
+| Writing a custom `FileEmitter` | [Publishing a skill package](https://sandermuller.github.io/boost-core/packages/boost-core/publishing-skills) |
+| Tags, skill dependencies, remote skills, conventions | [Guide](https://sandermuller.github.io/boost-core/guide/what-is-boost) |
+| Every command and exit code | [CLI reference](https://sandermuller.github.io/boost-core/reference/cli) |
 
-Three relationships, distinct shapes:
-
-- **Inherits from [`sandermuller/package-boost-php`](https://github.com/sandermuller/package-boost-php).** Required as a Composer dependency. Everything that package ships — the `foundation` guideline, the `lean` / `gitattributes` CLI, the framework-agnostic package-author skills — is available without re-declaring. This package layers Laravel-specific skills, the `laravel-packages` guideline, and `McpJsonEmitter` on top.
-- **Coexists with [`laravel/boost`](https://github.com/laravel/boost) inside the package's test app.** Disjoint concerns: this package is dev-time package authorship (skills, guidelines, MCP wiring); `laravel/boost` is the MCP server + Laravel docs API your AI agent talks to once running. The `McpJsonEmitter` is the seam — it points the MCP client at `vendor/bin/testbench boost:mcp` so `laravel/boost`'s server can boot under Testbench. Without this emitter, `laravel/boost`'s install-time `.mcp.json` write targets `php artisan`, which doesn't exist in a package codebase.
-- **Serves Laravel-package projects.** The consumer is a package author writing a Composer package that depends on Laravel. The guideline activates only when `composer.json` declares `require.illuminate/*` or `require.laravel/framework`; the skills are tagged for Laravel-package workflows.
-
-## Auto-sync
-
-To re-sync on every `composer install` / `composer update`, wire the callback into your project's `composer.json`:
-
-```json
-"scripts": {
-    "post-install-cmd": ["SanderMuller\\BoostCore\\Scripts\\BoostAutoSync::run"],
-    "post-update-cmd": ["SanderMuller\\BoostCore\\Scripts\\BoostAutoSync::run"]
-}
-```
-
-`BOOST_SKIP_AUTOSYNC=1` disables the callback. (Boost-core 0.6.0 retired its Composer plugin; consumer auto-sync is opt-in via this script hook.)
+The semver-protected surface is in [PUBLIC_API.md](PUBLIC_API.md). Everything else is `@internal`.
 
 ## Testing
 
